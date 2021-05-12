@@ -1,28 +1,34 @@
 {
-    "name": "baidu/aip-sdk",
-    "description": "baidu pulic ai php sdk",
+    "name": "maxsky/baidu-aip-sdk",
+    "description": "Baidu public ai php sdk",
+    "type": "library",
+    "license": "Apache-2.0",
     "authors": [
         {
-            "name": "baidu"
+            "name": "Baidu"
+        },
+        {
+            "name": "Max Sky",
+            "email": "max940213@live.com"
         }
     ],
-    "license": "Apache-2.0",
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=7.1",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.5"
     },
-    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
-        "files": [
-            "lib/AipBase.php",
-            "AipBodyAnalysis.php",
-            "AipContentCensor.php",
-            "AipFace.php",
-            "AipImageClassify.php",
-            "AipImageSearch.php",
-            "AipKg.php",
-            "AipNlp.php",
-            "AipOcr.php",
-            "AipSpeech.php"
-        ]
+        "psr-4": {
+            "Baidu\\Aip\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
     }
 }

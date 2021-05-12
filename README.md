@@ -1,6 +1,7 @@
 # 安装PHP SDK
 
 ## 目录结构
+
 ```
   ├── AipOcr.php                // OCR
   ├── AipNlp.php                // NLP
@@ -16,22 +17,13 @@
       └── AipBase                  //Aip基类
 ```
 
-**支持 PHP版本：5.3+**
+**支持 PHP版本：7.1+**
 
 **Composer安装：**
 
 ```
   composer require baidu/aip-sdk
 ```
-
-**手动安装步骤如下：**
-
-1. 下载PHP SDK。
-
-2. 复制```Aip*.php```以及```lib/*```到工程。
-
-3. require_once '对应服务';
-
 
 # 使用文档
 

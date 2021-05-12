@@ -1,4 +1,5 @@
 <?php
+
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -15,21 +16,25 @@
 * the License.
 */
 
-class AipImageUtil{
+namespace Baidu\Aip\Lib;
+
+class AipImageUtil {
 
     /**
      * 获取图片信息
-     * @param  $content string
+     *
+     * @param string $content
+     *
      * @return array
      */
-    public static function getImageInfo($content){
+    public static function getImageInfo(string $content): array {
         $info = getimagesizefromstring($content);
 
-        return array(
+        return [
             'mime' => $info['mime'],
             'width' => $info[0],
             'height' => $info[1],
-        );
+        ];
     }
 }
 

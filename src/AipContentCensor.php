@@ -1,4 +1,5 @@
 <?php
+
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -15,11 +16,11 @@
 * the License.
 */
 
-require_once 'AipImageCensor.php';
+namespace Baidu\Aip;
 
 /**
  * 内容审核
  */
-class AipContentCensor extends AipImageCensor{
+class AipContentCensor extends AipImageCensor {
 
 }

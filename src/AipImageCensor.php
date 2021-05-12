@@ -1,4 +1,5 @@
 <?php
+
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -15,27 +16,32 @@
 * the License.
 */
 
-require_once 'lib/AipBase.php';
+namespace Baidu\Aip;
+
+use Baidu\Aip\Lib\AipBase;
 
 /**
  * 黄反识别
  */
-class AipImageCensor extends AipBase{
+class AipImageCensor extends AipBase {
 
     /**
      * antiporn api url
+     *
      * @var string
      */
     private $antiPornUrl = 'https://aip.baidubce.com/rest/2.0/antiporn/v1/detect';
 
     /**
      * antiporn gif api url
+     *
      * @var string
      */
     private $antiPornGifUrl = 'https://aip.baidubce.com/rest/2.0/antiporn/v1/detect_gif';
 
     /**
      * antiterror api url
+     *
      * @var string
      */
     private $antiTerrorUrl = 'https://aip.baidubce.com/rest/2.0/antiterror/v1/detect';
@@ -66,89 +72,94 @@ class AipImageCensor extends AipBase{
     private $textCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined';
 
     /**
-     * @param  string $image 图像读取
+     * @param string $image 图像读取
+     *
      * @return array
      */
-    public function antiPorn($image){
+    public function antiPorn($image) {
 
-        $data = array();
+        $data = [];
         $data['image'] = base64_encode($image);
 
         return $this->request($this->antiPornUrl, $data);
     }
 
     /**
-     * @param  string $image 图像读取
+     * @param string $image 图像读取
+     *
      * @return array
      */
-    public function multi_antiporn($images){
+    public function multi_antiporn($images) {
 
-        $data = array();
-        foreach($images as $image){
-            $data[] = array(
+        $data = [];
+        foreach ($images as $image) {
+            $data[] = [
                 'image' => base64_encode($image),
-            );
+            ];
         }
 
         return $this->multi_request($this->antiPornUrl, $data);
     }
 
     /**
-     * @param  string $image 图像读取
+     * @param string $image 图像读取
+     *
      * @return array
      */
-    public function antiPornGif($image){
+    public function antiPornGif($image) {
 
-        $data = array();
+        $data = [];
         $data['image'] = base64_encode($image);
 
         return $this->request($this->antiPornGifUrl, $data);
     }
 
     /**
-     * @param  string $image 图像读取
+     * @param string $image 图像读取
+     *
      * @return array
      */
-    public function antiTerror($image){
+    public function antiTerror($image) {
 
-        $data = array();
+        $data = [];
         $data['image'] = base64_encode($image);
 
         return $this->request($this->antiTerrorUrl, $data);
     }
 
     /**
-     * @param  string $images 图像读取
+     * @param string $images 图像读取
+     *
      * @return array
      */
-    public function faceAudit($images, $configId=''){
+    public function faceAudit($images, $configId = '') {
 
         // 非数组则处理为数组
-        if(!is_array($images)){
-            $images = array(
+        if (!is_array($images)) {
+            $images = [
                 $images,
-            );
+            ];
         }
 
-        $data = array(
+        $data = [
             'configId' => $configId,
-        );
+        ];
 
         $isUrl = substr(trim($images[0]), 0, 4) === 'http';
-        if(!$isUrl){
-            $arr = array();
-            
-            foreach($images as $image){
+        if (!$isUrl) {
+            $arr = [];
+
+            foreach ($images as $image) {
                 $arr[] = base64_encode($image);
             }
             $data['images'] = implode(',', $arr);
-        }else{
-            $urls = array();
-            
-            foreach($images as $url){
+        } else {
+            $urls = [];
+
+            foreach ($images as $url) {
                 $urls[] = urlencode($url);
             }
-            
+
             $data['imgUrls'] = implode(',', $urls);
         }
 
@@ -156,69 +167,73 @@ class AipImageCensor extends AipBase{
     }
 
     /**
-     * @param  string $image 图像读取
+     * @param string $image 图像读取
+     *
      * @return array
      */
-    public function imageCensorComb($image, $scenes='antiporn', $options=array()){
+    public function imageCensorComb($image, $scenes = 'antiporn', $options = []) {
 
         $scenes = !is_array($scenes) ? explode(',', $scenes) : $scenes;
-        
-        $data = array(
+
+        $data = [
             'scenes' => $scenes,
-        );
+        ];
 
         $isUrl = substr(trim($image), 0, 4) === 'http';
-        if(!$isUrl){
+        if (!$isUrl) {
             $data['image'] = base64_encode($image);
-        }else{
+        } else {
             $data['imgUrl'] = $image;
         }
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->imageCensorCombUrl, json_encode($data), array(
+        return $this->request($this->imageCensorCombUrl, json_encode($data), [
             'Content-Type' => 'application/json',
-        ));
+        ]);
     }
 
     /**
-     * @param  string $image 图像
+     * @param string $image 图像
+     *
      * @return array
      */
-    public function imageCensorUserDefined($image){
-        
-        $data = array();
+    public function imageCensorUserDefined($image) {
+
+        $data = [];
 
         $isUrl = substr(trim($image), 0, 4) === 'http';
-        if(!$isUrl){
+        if (!$isUrl) {
             $data['image'] = base64_encode($image);
-        }else{
+        } else {
             $data['imgUrl'] = $image;
         }
 
-        return $this->request($this->imageCensorUserDefinedUrl, $data);     
+        return $this->request($this->imageCensorUserDefinedUrl, $data);
     }
 
     /**
-     * @param  string $text
+     * @param string $text
+     *
      * @return array
      */
-    public function textCensorUserDefined($text){
-        
-        $data = array();
+    public function textCensorUserDefined($text) {
+
+        $data = [];
 
         $data['text'] = $text;
 
-        return $this->request($this->textCensorUserDefinedUrl, $data);     
+        return $this->request($this->textCensorUserDefinedUrl, $data);
     }
 
     /**
-     * @param  string $content
+     * @param string $content
+     *
      * @return array
      */
-    public function antiSpam($content, $options=array()){
+    public function antiSpam($content, $options = []) {
 
-        $data = array();
+        $data = [];
         $data['content'] = $content;
 
         $data = array_merge($data, $options);

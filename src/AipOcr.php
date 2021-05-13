@@ -306,46 +306,32 @@ class AipOcr extends AipBase {
     /**
      * 通用文字识别接口
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @url https://cloud.baidu.com/doc/OCR/s/zk3h7xz52#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
-     * @description options列表:
-     *   language_type 识别语言类型，默认为CHN_ENG。可选值包括：<br>- CHN_ENG：中英文混合；<br>- ENG：英文；<br>- POR：葡萄牙语；<br>- FRE：法语；<br>-
-     *   GER：德语；<br>- ITA：意大利语；<br>- SPA：西班牙语；<br>- RUS：俄语；<br>- JAP：日语；<br>- KOR：韩语； detect_direction
-     *   是否检测图像朝向，默认不检测，即：false。朝向是指输入图像是正常方向、逆时针旋转90/180/270度。可选值包括:<br>- true：检测朝向；<br>- false：不检测朝向。 detect_language
-     *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） probability 是否返回识别结果中每一行的置信度
+     * @param string|null $image   图像数据，base64 编码后进行 urlencode，要求 base64 编码和 urlencode 后大小不超过4M，
+     *                             最短边至少 15px，最长边最大 4096px，支持 jpg/jpeg/png/bmp 格式，
+     *                             当 image 字段存在时 url 字段失效
+     * @param string|null $url     图片完整 URL，URL 长度不超过 1024 字节，URL 对应的图片 base64 编码后大小不超过 4M，
+     *                             最短边至少 15px，最长边最大 4096px，支持 jpg/jpeg/png/bmp 格式，
+     *                             当 image 字段存在时 url 字段失效，不支持 https 的图片链接
+     * @param array       $options 可选参数
+     *
      * @return array
-     */
-    public function basicGeneral($image, $options = []) {
-
-        $data = [];
-
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->generalBasicUrl, $data);
-    }
-
-    /**
-     * 通用文字识别接口
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   language_type 识别语言类型，默认为CHN_ENG。可选值包括：<br>- CHN_ENG：中英文混合；<br>- ENG：英文；<br>- POR：葡萄牙语；<br>- FRE：法语；<br>-
-     *   GER：德语；<br>- ITA：意大利语；<br>- SPA：西班牙语；<br>- RUS：俄语；<br>- JAP：日语；<br>- KOR：韩语； detect_direction
-     *   是否检测图像朝向，默认不检测，即：false。朝向是指输入图像是正常方向、逆时针旋转90/180/270度。可选值包括:<br>- true：检测朝向；<br>- false：不检测朝向。 detect_language
-     *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） probability 是否返回识别结果中每一行的置信度
-     * @return array
      */
-    public function basicGeneralUrl($url, $options = []) {
+    public function basicGeneral(?string $image = null, ?string $url = null, array $options = []): array {
+        if (!$image && !$url) {
+            return [
+                'error_code' => 216101,
+                'error_msg' => 'not enough param'
+            ];
+        }
 
-        $data = [];
-
-        $data['url'] = $url;
+        if ($image) {
+            $data['image'] = base64_encode($image);
+        } else {
+            $data['url'] = $url;
+        }
 
         $data = array_merge($data, $options);
 
@@ -363,10 +349,7 @@ class AipOcr extends AipBase {
      *   probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function basicAccurate($image, $options = []) {
-
-        $data = [];
-
+    public function basicAccurate(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -388,10 +371,7 @@ class AipOcr extends AipBase {
      *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） vertexes_location 是否返回文字外接多边形顶点位置，不支持单字位置。默认为false probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function general($image, $options = []) {
-
-        $data = [];
-
+    public function general(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -414,10 +394,7 @@ class AipOcr extends AipBase {
      *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） vertexes_location 是否返回文字外接多边形顶点位置，不支持单字位置。默认为false probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function generalUrl($url, $options = []) {
-
-        $data = [];
-
+    public function generalUrl(string $url, array $options = []): array {
         $data['url'] = $url;
 
         $data = array_merge($data, $options);
@@ -438,10 +415,7 @@ class AipOcr extends AipBase {
      *   probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function accurate($image, $options = []) {
-
-        $data = [];
-
+    public function accurate(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -462,10 +436,7 @@ class AipOcr extends AipBase {
      *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function enhancedGeneral($image, $options = []) {
-
-        $data = [];
-
+    public function enhancedGeneral(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -487,10 +458,7 @@ class AipOcr extends AipBase {
      *   是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语） probability 是否返回识别结果中每一行的置信度
      * @return array
      */
-    public function enhancedGeneralUrl($url, $options = []) {
-
-        $data = [];
-
+    public function enhancedGeneralUrl(string $url, array $options = []): array {
         $data['url'] = $url;
 
         $data = array_merge($data, $options);
@@ -509,10 +477,7 @@ class AipOcr extends AipBase {
      *   detect_language 是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语）
      * @return array
      */
-    public function webImage($image, $options = []) {
-
-        $data = [];
-
+    public function webImage(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -533,10 +498,7 @@ class AipOcr extends AipBase {
      *   detect_language 是否检测语言，默认不检测。当前支持（中文、英语、日语、韩语）
      * @return array
      */
-    public function webImageUrl($url, $options = []) {
-
-        $data = [];
-
+    public function webImageUrl(string $url, array $options = []): array {
         $data['url'] = $url;
 
         $data = array_merge($data, $options);
@@ -556,10 +518,7 @@ class AipOcr extends AipBase {
      *   detect_risk 是否开启身份证风险类型(身份证复印件、临时身份证、身份证翻拍、修改过的身份证)功能，默认不开启，即：false。可选值:true-开启；false-不开启
      * @return array
      */
-    public function idcard($image, $idCardSide, $options = []) {
-
-        $data = [];
-
+    public function idCard(string $image, string $idCardSide, array $options = []): array {
         $data['image'] = base64_encode($image);
         $data['id_card_side'] = $idCardSide;
 
@@ -826,7 +785,7 @@ class AipOcr extends AipBase {
      * @return array
      * @description options列表:
      */
-    public function vinCodeUrl(string $url, $options = []): array {
+    public function vinCodeUrl(string $url, array $options = []): array {
         $data['url'] = $url;
 
         $data = array_merge($data, $options);
@@ -877,7 +836,7 @@ class AipOcr extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function HKMacauExitEntryPermit(string $image, $options = []): array {
+    public function HKMacauExitEntryPermit(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -911,7 +870,7 @@ class AipOcr extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function birthCertificate(string $image, $options = []): array {
+    public function birthCertificate(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
@@ -1200,7 +1159,7 @@ class AipOcr extends AipBase {
      *
      * @return array
      */
-    public function tableRecognition($image, $options = [], int $timeout = 10000): array {
+    public function tableRecognition(string $image, array $options = [], int $timeout = 10000): array {
         $result = $this->tableRecognitionAsync($image);
 
         if (isset($result['error_code'])) {

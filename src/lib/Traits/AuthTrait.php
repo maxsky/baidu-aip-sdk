@@ -20,7 +20,7 @@ trait AuthTrait {
      * @return string
      */
     private function getAuthFilePath(): string {
-        return dirname(__FILE__) . DIRECTORY_SEPARATOR . md5($this->apiKey);
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($this->apiKey);
     }
 
     /**
@@ -30,16 +30,22 @@ trait AuthTrait {
      * @throws Exception array not exists keys
      */
     private function readAuthObj(): ?array {
-        $content = file_get_contents($this->getAuthFilePath());
+        $filePath = $this->getAuthFilePath();
 
-        if ($content !== false) {
-            $obj = processResult($content);
-            $this->isCloudUser = $obj['is_cloud_user'];
-            $obj['is_read'] = true;
+        if (file_exists($filePath)) {
+            $content = file_get_contents($this->getAuthFilePath());
 
-            if ($this->isCloudUser || $obj['time'] + $obj['expires_in'] - 30 > time()) {
-                return $obj;
+            if ($content) {
+                $obj = processResult($content);
+                $this->isCloudUser = $obj['is_cloud_user'];
+                $obj['is_read'] = true;
+
+                if ($this->isCloudUser || $obj['time'] + $obj['expires_in'] - 30 > time()) {
+                    return $obj;
+                }
             }
+        } else {
+            file_put_contents($filePath, '');
         }
 
         return null;
@@ -53,7 +59,7 @@ trait AuthTrait {
      * @return void
      */
     private function writeAuthObj(array $obj) {
-        if ($obj === null || (isset($obj['is_read']) && $obj['is_read'] === true)) {
+        if (isset($obj['is_read']) && $obj['is_read'] === true) {
             return;
         }
 
@@ -110,7 +116,7 @@ trait AuthTrait {
         $headers['Host'] = isset($obj['port']) ? sprintf('%s:%s', $obj['host'], $obj['port']) : $obj['host'];
         $headers['x-bce-date'] = $timestamp;
 
-        //签名
+        // 签名
         $headers['authorization'] = AipSampleSigner::sign([
             'ak' => $this->apiKey,
             'sk' => $this->secretKey,

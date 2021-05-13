@@ -73,7 +73,7 @@ class AipBase {
      */
     private $scope = 'brain_all_scope';
 
-    private $isCloudUser = null;
+    private $isCloudUser = false;
 
     private $proxies = [];
 
@@ -116,13 +116,12 @@ class AipBase {
     }
 
     /**
-     * 处理请求参数
-     *
-     * @param array $params
+     * @return AipBase
      */
-    protected function processRequest(array &$params) {
-        $params['aipSdk'] = 'php';
-        $params['aipSdkVersion'] = $this->version;
+    public function setCloudUser(): AipBase {
+        $this->isCloudUser = true;
+
+        return $this;
     }
 
     /**
@@ -134,7 +133,7 @@ class AipBase {
      *
      * @return array|null
      */
-    protected function request(string $url, $data, $headers = []): ?array {
+    protected function request(string $url, $data, array $headers = []): ?array {
         $params = [];
 
         try {
@@ -150,9 +149,10 @@ class AipBase {
             $headers = $this->getAuthHeaders('POST', $url, $params, $headers);
 
             $response = $this->httpClient->post($url, [
-                'headers' => $headers,
                 'query' => $params,
-                'json' => $data
+                'form_params' => $data,
+                'headers' => $headers,
+                'proxy' => $this->proxies
             ])->getBody();
 
             $obj = processResult($response);
@@ -165,7 +165,8 @@ class AipBase {
                 $response = $this->httpClient->post($url, [
                     'headers' => $headers,
                     'query' => $params,
-                    'form_params' => $data
+                    'form_params' => $data,
+                    'proxy' => $this->proxies
                 ])->getBody();
 
                 $obj = processResult($response);
@@ -196,7 +197,8 @@ class AipBase {
         // 非过期刷新
         if (!$refresh) {
             $obj = $this->readAuthObj();
-            if (!empty($obj)) {
+
+            if ($obj) {
                 return $obj;
             }
         }
@@ -205,17 +207,27 @@ class AipBase {
             'query' => [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->apiKey,
-                'client_secret' => $this->secretKey,
-            ]
+                'client_secret' => $this->secretKey
+            ],
+            'proxy' => $this->proxies
         ])->getBody();
 
-        $obj = processResult($response['content']);
+        $obj = processResult($response);
 
         $this->isCloudUser = !$this->isPermission($obj);
 
         return $obj;
     }
 
+    /**
+     * 处理请求参数
+     *
+     * @param array $params
+     */
+    private function processRequest(array &$params) {
+        $params['aipSdk'] = 'php';
+        $params['aipSdkVersion'] = $this->version;
+    }
 
     /**
      * 反馈
@@ -224,24 +236,9 @@ class AipBase {
      *
      * @return array
      */
-    public function report(array $feedback): array {
-        $data = [];
-
+    private function report(array $feedback): array {
         $data['feedback'] = $feedback;
 
         return $this->request($this->reportUrl, $data);
-    }
-
-    /**
-     * 通用接口
-     *
-     * @param string $url
-     * @param array  $data
-     * @param array  $headers
-     *
-     * @return array
-     */
-    public function post(string $url, array $data, array $headers = []): array {
-        return $this->request($url, $data, $headers);
     }
 }

@@ -18,6 +18,7 @@
 
 namespace Baidu\Aip\Lib;
 
+use Baidu\Aip\Lib\Traits\AuthTrait;
 use Exception;
 use GuzzleHttp\Client;
 
@@ -26,53 +27,56 @@ use GuzzleHttp\Client;
  */
 class AipBase {
 
-    private $version = '2_2_17';
+    use AuthTrait;
+
+    private $version = '2_2_20';
 
     /**
      * 获取 access token url
      *
      * @var string
      */
-    protected $accessTokenUrl = 'https://aip.baidubce.com/oauth/2.0/token';
+    private $accessTokenUrl = 'https://aip.baidubce.com/oauth/2.0/token';
 
     /**
      * 反馈接口
      *
      * @var string
      */
-    protected $reportUrl = 'https://aip.baidubce.com/rpc/2.0/feedback/v1/report';
+    private $reportUrl = 'https://aip.baidubce.com/rpc/2.0/feedback/v1/report';
 
     /**
      * appId
      *
      * @var string
      */
-    protected $appId = '';
+    private $appId;
 
     /**
      * apiKey
      *
      * @var string
      */
-    protected $apiKey = '';
+    private $apiKey;
 
     /**
      * secretKey
      *
      * @var string
      */
-    protected $secretKey = '';
+    private $secretKey;
 
     /**
      * 权限
      *
      * @var array
      */
-    protected $scope = 'brain_all_scope';
+    private $scope = 'brain_all_scope';
 
-    private $isCloudUser = false;
+    private $isCloudUser = null;
 
-    /** @var Client */
+    private $proxies = [];
+
     private $httpClient;
 
     /**
@@ -81,20 +85,34 @@ class AipBase {
      * @param string $secretKey
      */
     public function __construct(string $appId, string $apiKey, string $secretKey) {
-        $this->httpClient = new Client();
-
         $this->appId = trim($appId);
         $this->apiKey = trim($apiKey);
         $this->secretKey = trim($secretKey);
+
+        $this->httpClient = new Client();
     }
 
     /**
      * 查看版本
      *
      * @return string
+     *
      */
     public function getVersion(): string {
         return $this->version;
+    }
+
+    /**
+     * 代理
+     *
+     * @param array $proxies
+     *
+     * @return AipBase
+     */
+    public function setProxies(array $proxies): AipBase {
+        $this->proxies = $proxies;
+
+        return $this;
     }
 
     /**
@@ -111,114 +129,51 @@ class AipBase {
      * Api 请求
      *
      * @param string $url
-     * @param array  $data
+     * @param mixed  $data
      * @param array  $headers
      *
-     * @return mixed|bool|string[]
+     * @return array|null
      */
-    protected function request(string $url, array $data, array $headers = []) {
+    protected function request(string $url, $data, $headers = []): ?array {
         $params = [];
-        $authObj = $this->auth();
 
-        if ($this->isCloudUser === false) {
-            $params['access_token'] = $authObj['access_token'];
-        }
-
-        // 特殊处理
-        $this->processRequest($params);
-
-        $headers = $this->getAuthHeaders('POST', $url, $params, $headers);
-
-        $response = $this->httpClient->post($url, [
-            'headers' => $headers,
-            'query' => $params,
-            'form_params' => $data
-        ])->getBody();
-
-        $obj = $this->processResult($response);
-
-        if (!$this->isCloudUser && isset($obj['error_code']) && $obj['error_code'] == 110) {
-            $authObj = $this->auth(true);
-            $params['access_token'] = $authObj['access_token'];
-
-            $response = $this->httpClient->post($url, [
-                'headers' => $headers,
-                'query' => $params,
-                'form_params' => $data
-            ])->getBody();
-
-            $obj = $this->processResult($response);
-        }
-
-        if (empty($obj) || !isset($obj['error_code'])) {
-            $this->writeAuthObj($authObj);
-        }
-
-        return $obj;
-    }
-
-    /**
-     * Api 多个并发请求
-     *
-     * @param string $url
-     * @param array  $data
-     *
-     * @return mixed
-     */
-    protected function multi_request(string $url, array $data) {
         try {
-            $params = [];
             $authObj = $this->auth();
-            $headers = $this->getAuthHeaders('POST', $url);
 
             if ($this->isCloudUser === false) {
                 $params['access_token'] = $authObj['access_token'];
             }
 
-            $responses = [];
+            // 特殊处理
+            $this->processRequest($params);
 
-            foreach ($data as $item) {
-                $responses[] = $this->httpClient->post($url, [
+            $headers = $this->getAuthHeaders('POST', $url, $params, $headers);
+
+            $response = $this->httpClient->post($url, [
+                'headers' => $headers,
+                'query' => $params,
+                'json' => $data
+            ])->getBody();
+
+            $obj = processResult($response);
+
+            if (!$this->isCloudUser && isset($obj['error_code']) && $obj['error_code'] == 110) {
+                $authObj = $this->auth(true);
+
+                $params['access_token'] = $authObj['access_token'];
+
+                $response = $this->httpClient->post($url, [
                     'headers' => $headers,
                     'query' => $params,
-                    'form_params' => $item
+                    'form_params' => $data
                 ])->getBody();
+
+                $obj = processResult($response);
             }
 
-            $is_success = false;
-
-            foreach ($responses as $response) {
-                $obj = $this->processResult($response);
-
-                if (empty($obj) || !isset($obj['error_code'])) {
-                    $is_success = true;
-                }
-
-                if (!$this->isCloudUser && isset($obj['error_code']) && $obj['error_code'] == 110) {
-                    $authObj = $this->auth(true);
-
-                    $params['access_token'] = $authObj['access_token'];
-
-                    $responses = $this->httpClient->post($url, [
-                        'headers' => $headers,
-                        'query' => $params,
-                        'form_params' => $data
-                    ]);
-
-                    break;
-                }
-            }
-
-            if ($is_success) {
+            if (empty($obj) || !isset($obj['error_code'])) {
                 $this->writeAuthObj($authObj);
             }
-
-            $objs = [];
-
-            foreach ($responses as $response) {
-                $objs[] = $this->processResult($response);
-            }
-
         } catch (Exception $e) {
             return [
                 'error_code' => 'SDK108',
@@ -226,65 +181,7 @@ class AipBase {
             ];
         }
 
-        return $objs;
-    }
-
-    /**
-     * 格式化结果
-     *
-     * @param $content string
-     *
-     * @return mixed
-     */
-    protected function processResult(string $content) {
-        return json_decode($content, true);
-    }
-
-    /**
-     * 返回 access token 路径
-     *
-     * @return string
-     */
-    private function getAuthFilePath(): string {
-        return dirname(__FILE__) . DIRECTORY_SEPARATOR . md5($this->apiKey);
-    }
-
-    /**
-     * 写入本地文件
-     *
-     * @param array $obj
-     *
-     * @return void
-     */
-    private function writeAuthObj(array $obj) {
-        if ($obj === null || (isset($obj['is_read']) && $obj['is_read'] === true)) {
-            return;
-        }
-
-        $obj['time'] = time();
-        $obj['is_cloud_user'] = $this->isCloudUser;
-
-        file_put_contents($this->getAuthFilePath(), json_encode($obj));
-    }
-
-    /**
-     * 读取本地缓存
-     *
-     * @return array
-     */
-    private function readAuthObj(): ?array {
-        $content = file_get_contents($this->getAuthFilePath());
-
-        if ($content !== false) {
-            $obj = json_decode($content, true);
-            $this->isCloudUser = $obj['is_cloud_user'];
-            $obj['is_read'] = true;
-            if ($this->isCloudUser || $obj['time'] + $obj['expires_in'] - 30 > time()) {
-                return $obj;
-            }
-        }
-
-        return null;
+        return $obj;
     }
 
     /**
@@ -293,8 +190,9 @@ class AipBase {
      * @param bool $refresh 是否刷新
      *
      * @return array
+     * @throws Exception
      */
-    private function auth($refresh = false): array {
+    private function auth(bool $refresh = false): array {
         // 非过期刷新
         if (!$refresh) {
             $obj = $this->readAuthObj();
@@ -311,79 +209,24 @@ class AipBase {
             ]
         ])->getBody();
 
-        $obj = $this->processResult($response);
+        $obj = processResult($response['content']);
 
         $this->isCloudUser = !$this->isPermission($obj);
 
         return $obj;
     }
 
-    /**
-     * 判断认证是否有权限
-     *
-     * @param array $authObj
-     *
-     * @return bool
-     */
-    protected function isPermission(array $authObj): bool {
-        if (empty($authObj) || !isset($authObj['scope'])) {
-            return false;
-        }
-
-        $scopes = explode(' ', $authObj['scope']);
-
-        return in_array($this->scope, $scopes);
-    }
-
-    /**
-     * @param string $method HTTP method
-     * @param string $url
-     * @param array  $params
-     * @param array  $headers
-     *
-     * @return array
-     */
-    private function getAuthHeaders(string $method, string $url, array $params = [], array $headers = []): array {
-        // 不是云的老用户则不用在 header 中签名、认证
-        if ($this->isCloudUser === false) {
-            return $headers;
-        }
-
-        $obj = parse_url($url);
-        if (!empty($obj['query'])) {
-            foreach (explode('&', $obj['query']) as $kv) {
-                if (!empty($kv)) {
-                    [$k, $v] = explode('=', $kv, 2);
-                    $params[$k] = $v;
-                }
-            }
-        }
-
-        //UTC 时间戳
-        $timestamp = gmdate('Y-m-d\TH:i:s\Z');
-        $headers['Host'] = isset($obj['port']) ? sprintf('%s:%s', $obj['host'], $obj['port']) : $obj['host'];
-        $headers['x-bce-date'] = $timestamp;
-
-        //签名
-        $headers['authorization'] = AipSampleSigner::sign([
-            'ak' => $this->apiKey,
-            'sk' => $this->secretKey,
-        ], $method, $obj['path'], $headers, $params, [
-            'timestamp' => $timestamp,
-            'headersToSign' => array_keys($headers),
-        ]);
-
-        return $headers;
-    }
 
     /**
      * 反馈
      *
-     * @param $feedback
+     * @param array $feedback
      *
      * @return array
      */
-    public function report($feedback) {
+    public function report(array $feedback): array {
+        $data = [];
+
         $data['feedback'] = $feedback;
 
         return $this->request($this->reportUrl, $data);
@@ -398,7 +241,7 @@ class AipBase {
      *
      * @return array
      */
-    public function post(string $url, array $data, array $headers = []) {
+    public function post(string $url, array $data, array $headers = []): array {
         return $this->request($url, $data, $headers);
     }
 }

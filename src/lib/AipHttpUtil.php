@@ -1,18 +1,26 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: maxsky
- * Date: 2021/5/12
- * Time: 20:11
- */
+/*
+* Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not
+* use this file except in compliance with the License. You may obtain a copy of
+* the License at
+*
+* Http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations under
+* the License.
+*/
 
 namespace Baidu\Aip\Lib;
 
 use InvalidArgumentException;
 
 class AipHttpUtil {
-
     // 根据RFC 3986，除了：
     //   1.大小写英文字符
     //   2.阿拉伯数字
@@ -20,12 +28,12 @@ class AipHttpUtil {
     // 以外都要编码
     public static $PERCENT_ENCODED_STRINGS;
 
-    //填充编码数组
+    // 填充编码数组
     public static function __init() {
         AipHttpUtil::$PERCENT_ENCODED_STRINGS = [];
 
         for ($i = 0; $i < 256; ++$i) {
-            AipHttpUtil::$PERCENT_ENCODED_STRINGS[$i] = sprintf("%%%02X", $i);
+            AipHttpUtil::$PERCENT_ENCODED_STRINGS[$i] = sprintf('%%%02X', $i);
         }
 
         // a-z 不编码
@@ -38,12 +46,12 @@ class AipHttpUtil {
             AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
         }
 
-        // 0-9 不编码
+        //0-9不编码
         foreach (range('0', '9') as $ch) {
             AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
         }
 
-        // 以下 4 个字符不编码
+        //以下4个字符不编码
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('-')] = '-';
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('.')] = '.';
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('_')] = '_';
@@ -51,14 +59,14 @@ class AipHttpUtil {
     }
 
     /**
-     * 在 uri 编码中不能对 '/' 编码
+     * 在uri编码中不能对'/'编码
      *
      * @param string $path
      *
      * @return string
      */
-    public static function urlEncodeExceptSlash(string $path): string {
-        return str_replace("%2F", "/", AipHttpUtil::urlEncode($path));
+    public static function urlEncodeExceptSlash($path): string {
+        return str_replace('%2F', '/', AipHttpUtil::urlEncode($path));
     }
 
     /**
@@ -79,7 +87,7 @@ class AipHttpUtil {
     }
 
     /**
-     * 生成标准化QueryString
+     * 生成标准化 QueryString
      *
      * @param array $parameters
      *
@@ -87,7 +95,7 @@ class AipHttpUtil {
      */
     public static function getCanonicalQueryString(array $parameters): string {
         // 没有参数，直接返回空串
-        if (count($parameters) === 0) {
+        if (count($parameters) == 0) {
             return '';
         }
 
@@ -95,30 +103,25 @@ class AipHttpUtil {
 
         foreach ($parameters as $k => $v) {
             // 跳过 Authorization 字段
-            if (strcasecmp('Authorization', $k) === 0) {
-                continue;
-            }
+            if (strcasecmp('Authorization', $k) !== 0) {
+                if (!isset($k)) {
+                    throw new InvalidArgumentException('parameter key should not be null');
+                }
 
-            if (!isset($k)) {
-                throw new InvalidArgumentException(
-                    "parameter key should not be null"
-                );
-            }
-
-            if (isset($v)) {
-                // 对于有值的，编码后放在=号两边
-                $parameterStrings[] = AipHttpUtil::urlEncode($k)
-                    . '=' . AipHttpUtil::urlEncode((string)$v);
-            } else {
-                // 对于没有值的，只将key编码后放在=号的左边，右边留空
-                $parameterStrings[] = AipHttpUtil::urlEncode($k) . '=';
+                if (isset($v)) {
+                    // 对于有值的，编码后放在=号两边
+                    $parameterStrings[] = AipHttpUtil::urlEncode($k) . '=' . AipHttpUtil::urlEncode((string)$v);
+                } else {
+                    // 对于没有值的，只将 key 编码后放在 = 号的左边，右边留空
+                    $parameterStrings[] = AipHttpUtil::urlEncode($k) . '=';
+                }
             }
         }
 
         // 按照字典序排序
         sort($parameterStrings);
 
-        // 使用'&'符号连接它们
+        // 使用 '&' 符号连接
         return implode('&', $parameterStrings);
     }
 
@@ -130,21 +133,18 @@ class AipHttpUtil {
      * @return string
      */
     public static function getCanonicalURIPath(string $path): string {
-        // 空路径设置为'/'
+        // 空路径设置为 '/'
         if (empty($path)) {
             return '/';
-        } else {
-            // 所有的uri必须以'/'开头
-            if ($path[0] == '/') {
-                return AipHttpUtil::urlEncodeExceptSlash($path);
-            }
+        } elseif ($path[0] == '/') {  // 所有的 uri 必须以 '/' 开头
+            return AipHttpUtil::urlEncodeExceptSlash($path);
         }
 
         return '/' . AipHttpUtil::urlEncodeExceptSlash($path);
     }
 
     /**
-     * 生成标准化http请求头串
+     * 生成标准化 http 请求头串
      *
      * @param array $headers
      *
@@ -159,22 +159,21 @@ class AipHttpUtil {
         $headerStrings = [];
 
         foreach ($headers as $k => $v) {
-            // 跳过 key 为 null 的
-            if ($k === null) {
-                continue;
-            }
-            // 如果 value 为 null，则赋值为空串
-            if ($v === null) {
-                $v = '';
-            }
-            // trim 后再 encode，之后使用':'号连接起来
-            $headerStrings[] = AipHttpUtil::urlEncode(strtolower(trim($k))) . ':' . AipHttpUtil::urlEncode(trim($v));
-        }
+            // key 为 null 时跳过
+            if ($k !== null) {
+                // 如果 value 为 null，则赋值为空串
+                if ($v === null) {
+                    $v = '';
+                }
 
+                // trim 后再 encode，之后使用 ':' 号连接起来
+                $headerStrings[] = AipHttpUtil::urlEncode(strtolower(trim($k))) . ':' . AipHttpUtil::urlEncode(trim($v));
+            }
+        }
         // 字典序排序
         sort($headerStrings);
 
-        // 用 '\n' 把它们连接起来
+        // 用 '\n' 把连接
         return implode("\n", $headerStrings);
     }
 }

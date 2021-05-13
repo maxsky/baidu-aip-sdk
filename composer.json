@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": ">=7.1",
+        "ext-mbstring": "*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.5"
     },
@@ -25,7 +26,8 @@
     "autoload": {
         "psr-4": {
             "Baidu\\Aip\\": "src"
-        }
+        },
+        "files": ["src/Helper/helper.php"]
     },
     "config": {
         "sort-packages": true,

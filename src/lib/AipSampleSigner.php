@@ -18,13 +18,12 @@
 
 namespace Baidu\Aip\Lib;
 
-
 class AipSampleSigner {
 
     const BCE_AUTH_VERSION = "bce-auth-v1";
     const BCE_PREFIX = 'x-bce-';
 
-    //不指定headersToSign情况下，默认签名http头，包括：
+    // 不指定 headersToSign 情况下，默认签名 http 头，包括：
     //    1.host
     //    2.content-length
     //    3.content-type
@@ -33,10 +32,10 @@ class AipSampleSigner {
 
     public static function __init() {
         AipSampleSigner::$defaultHeadersToSign = [
-            "host",
-            "content-length",
-            "content-type",
-            "content-md5",
+            'host',
+            'content-length',
+            'content-type',
+            'content-md5',
         ];
     }
 
@@ -52,23 +51,17 @@ class AipSampleSigner {
      *
      * @return string
      */
-    public static function sign(
-        array $credentials,
-        string $httpMethod,
-        string $path,
-        array $headers,
-        array $params,
-        $options = []
-    ): string {
+    public static function sign(array $credentials, string $httpMethod,
+                                string $path, array $headers, array $params, $options = []): string {
         // 设定签名有效时间
         if (!isset($options[AipSignOption::EXPIRATION_IN_SECONDS])) {
-            // 默认值 1800 秒
+            // 默认值1800秒
             $expirationInSeconds = AipSignOption::DEFAULT_EXPIRATION_IN_SECONDS;
         } else {
             $expirationInSeconds = $options[AipSignOption::EXPIRATION_IN_SECONDS];
         }
 
-        //解析ak sk
+        // 解析 ak sk
         $accessKeyId = $credentials['ak'];
         $secretAccessKey = $credentials['sk'];
 
@@ -90,21 +83,22 @@ class AipSampleSigner {
         // 生成标准化 URI
         $canonicalURI = AipHttpUtil::getCanonicalURIPath($path);
 
-        // 生成标准化QueryString
+        // 生成标准化 QueryString
         $canonicalQueryString = AipHttpUtil::getCanonicalQueryString($params);
 
-        // 填充headersToSign，也就是指明哪些 header 参与签名
+        // 填充 headersToSign，也就是指明哪些 header 参与签名
         $headersToSign = null;
+
         if (isset($options[AipSignOption::HEADERS_TO_SIGN])) {
             $headersToSign = $options[AipSignOption::HEADERS_TO_SIGN];
         }
 
-        // 生成标准化header
+        // 生成标准化 header
         $canonicalHeader = AipHttpUtil::getCanonicalHeaders(
             AipSampleSigner::getHeadersToSign($headers, $headersToSign)
         );
 
-        // 整理headersToSign，以';'号连接
+        // 整理 headersToSign，以 ';' 号连接
         $signedHeaders = '';
 
         if ($headersToSign !== null) {
@@ -114,13 +108,12 @@ class AipSampleSigner {
         }
 
         // 组成标准请求串
-        $canonicalRequest = "$httpMethod\n$canonicalURI\n"
-            . "$canonicalQueryString\n$canonicalHeader";
+        $canonicalRequest = "$httpMethod\n$canonicalURI\n" . "$canonicalQueryString\n$canonicalHeader";
 
-        // 使用signKey和标准请求串完成签名
+        // 使用 signKey 和标准请求串完成签名
         $signature = hash_hmac('sha256', $canonicalRequest, $signingKey);
 
-        // 组成最终签名串
+        // 最终签名串
         return "$authString/$signedHeaders/$signature";
     }
 
@@ -152,18 +145,18 @@ class AipSampleSigner {
             }
         }
 
-        // 返回需要参与签名的header
+        // 返回需要参与签名的 header
         return $result;
     }
 
     /**
      * 检查 header 是不是默认参加签名的：
-     * 1.是 host、content-type、content-md5、content-length之一
-     * 2.以 x-bce 开头
+     * 1.是 host、content-type、content-md5、content-length 之一
+     * 2.以x-bce开头
      *
      * @param string $header
      *
-     * @return boolean
+     * @return bool
      */
     public static function isDefaultHeaderToSign(string $header): bool {
         $header = strtolower(trim($header));
@@ -173,6 +166,6 @@ class AipSampleSigner {
         }
 
         return substr_compare($header,
-                AipSampleSigner::BCE_PREFIX, 0, strlen(AipSampleSigner::BCE_PREFIX)) == 0;
+                AipSampleSigner::BCE_PREFIX, 0, strlen(AipSampleSigner::BCE_PREFIX)) === 0;
     }
 }

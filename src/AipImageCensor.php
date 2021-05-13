@@ -26,37 +26,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageCensor extends AipBase {
 
     /**
-     * antiporn api url
-     *
-     * @var string
-     */
-    private $antiPornUrl = 'https://aip.baidubce.com/rest/2.0/antiporn/v1/detect';
-
-    /**
-     * antiporn gif api url
-     *
-     * @var string
-     */
-    private $antiPornGifUrl = 'https://aip.baidubce.com/rest/2.0/antiporn/v1/detect_gif';
-
-    /**
-     * antiterror api url
-     *
-     * @var string
-     */
-    private $antiTerrorUrl = 'https://aip.baidubce.com/rest/2.0/antiterror/v1/detect';
-
-    /**
-     * @var string
-     */
-    private $faceAuditUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/face_audit';
-
-    /**
-     * @var string
-     */
-    private $imageCensorCombUrl = 'https://aip.baidubce.com/api/v1/solution/direct/img_censor';
-
-    /**
      * @var string
      */
     private $imageCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/img_censor/v2/user_defined';
@@ -64,145 +33,26 @@ class AipImageCensor extends AipBase {
     /**
      * @var string
      */
-    private $antiSpamUrl = 'https://aip.baidubce.com/rest/2.0/antispam/v2/spam';
+    private $textCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined';
 
     /**
      * @var string
      */
-    private $textCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined';
+    private $voiceCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/voice_censor/v2/user_defined';
 
     /**
-     * @param string $image 图像读取
-     *
-     * @return array
+     * @var string
      */
-    public function antiPorn($image) {
-
-        $data = [];
-        $data['image'] = base64_encode($image);
-
-        return $this->request($this->antiPornUrl, $data);
-    }
-
-    /**
-     * @param string $image 图像读取
-     *
-     * @return array
-     */
-    public function multi_antiporn($images) {
-
-        $data = [];
-        foreach ($images as $image) {
-            $data[] = [
-                'image' => base64_encode($image),
-            ];
-        }
-
-        return $this->multi_request($this->antiPornUrl, $data);
-    }
-
-    /**
-     * @param string $image 图像读取
-     *
-     * @return array
-     */
-    public function antiPornGif($image) {
-
-        $data = [];
-        $data['image'] = base64_encode($image);
-
-        return $this->request($this->antiPornGifUrl, $data);
-    }
-
-    /**
-     * @param string $image 图像读取
-     *
-     * @return array
-     */
-    public function antiTerror($image) {
-
-        $data = [];
-        $data['image'] = base64_encode($image);
-
-        return $this->request($this->antiTerrorUrl, $data);
-    }
-
-    /**
-     * @param string $images 图像读取
-     *
-     * @return array
-     */
-    public function faceAudit($images, $configId = '') {
-
-        // 非数组则处理为数组
-        if (!is_array($images)) {
-            $images = [
-                $images,
-            ];
-        }
-
-        $data = [
-            'configId' => $configId,
-        ];
-
-        $isUrl = substr(trim($images[0]), 0, 4) === 'http';
-        if (!$isUrl) {
-            $arr = [];
-
-            foreach ($images as $image) {
-                $arr[] = base64_encode($image);
-            }
-            $data['images'] = implode(',', $arr);
-        } else {
-            $urls = [];
-
-            foreach ($images as $url) {
-                $urls[] = urlencode($url);
-            }
-
-            $data['imgUrls'] = implode(',', $urls);
-        }
-
-        return $this->request($this->faceAuditUrl, $data);
-    }
-
-    /**
-     * @param string $image 图像读取
-     *
-     * @return array
-     */
-    public function imageCensorComb($image, $scenes = 'antiporn', $options = []) {
-
-        $scenes = !is_array($scenes) ? explode(',', $scenes) : $scenes;
-
-        $data = [
-            'scenes' => $scenes,
-        ];
-
-        $isUrl = substr(trim($image), 0, 4) === 'http';
-        if (!$isUrl) {
-            $data['image'] = base64_encode($image);
-        } else {
-            $data['imgUrl'] = $image;
-        }
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->imageCensorCombUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
+    private $videoCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/video_censor/v2/user_defined';
 
     /**
      * @param string $image 图像
      *
      * @return array
      */
-    public function imageCensorUserDefined($image) {
-
-        $data = [];
-
+    public function imageCensorUserDefined(string $image): array {
         $isUrl = substr(trim($image), 0, 4) === 'http';
+
         if (!$isUrl) {
             $data['image'] = base64_encode($image);
         } else {
@@ -217,28 +67,47 @@ class AipImageCensor extends AipBase {
      *
      * @return array
      */
-    public function textCensorUserDefined($text) {
-
-        $data = [];
-
-        $data['text'] = $text;
-
-        return $this->request($this->textCensorUserDefinedUrl, $data);
+    public function textCensorUserDefined(string $text): array {
+        return $this->request($this->textCensorUserDefinedUrl, ['text' => $text]);
     }
 
     /**
-     * @param string $content
+     * @param string $voice
+     * @param string $fmt
+     * @param array  $options
      *
      * @return array
      */
-    public function antiSpam($content, $options = []) {
+    public function voiceCensorUserDefined(string $voice, string $fmt, array $options = []): array {
+        $isUrl = substr(trim($voice), 0, 4) === 'http';
 
-        $data = [];
-        $data['content'] = $content;
+        if (!$isUrl) {
+            $data['base64'] = base64_encode($voice);
+        } else {
+            $data['url'] = $voice;
+        }
+
+        $data['fmt'] = $fmt;
+        $data = array_merge($data, $options);
+
+        return $this->request($this->voiceCensorUserDefinedUrl, $data);
+    }
+
+    /**
+     * @param string $name
+     * @param string $videoUrl
+     * @param string $extId
+     * @param array  $options
+     *
+     * @return array
+     */
+    public function videoCensorUserDefined(string $name, string $videoUrl, string $extId, array $options = []): array {
+        $data['name'] = $name;
+        $data['videoUrl'] = $videoUrl;
+        $data['extId'] = $extId;
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->antiSpamUrl, $data);
+        return $this->request($this->videoCensorUserDefinedUrl, $data);
     }
-
 }

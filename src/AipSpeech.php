@@ -30,25 +30,14 @@ class AipSpeech extends AipBase {
      *
      * @var string
      */
-    public $asrUrl = 'http://vop.baidu.com/server_api';
+    public $asrUrl = 'https://vop.baidu.com/server_api';
 
     /**
      * url
      *
      * @var string
      */
-    public $ttsUrl = 'http://tsn.baidu.com/text2audio';
-
-    /**
-     * 判断认证是否有权限
-     *
-     * @param array $authObj
-     *
-     * @return boolean
-     */
-    protected function isPermission($authObj) {
-        return true;
-    }
+    public $ttsUrl = 'https://tsn.baidu.com/text2audio';
 
     /**
      * 处理请求参数
@@ -58,9 +47,8 @@ class AipSpeech extends AipBase {
      * @param array  $data
      * @param array  $headers
      */
-    protected function proccessRequest($url, &$params, &$data, $headers) {
-
-        $token = isset($params['access_token']) ? $params['access_token'] : '';
+    protected function processRequest($url, array &$params, array &$data, array $headers) {
+        $token = $params['access_token'] ?? '';
 
         if (empty($data['cuid'])) {
             $data['cuid'] = md5($token);
@@ -81,10 +69,10 @@ class AipSpeech extends AipBase {
      *
      * @param $content string
      *
-     * @return mixed
+     * @return array|string[]|null
      */
-    protected function processResult($content) {
-        $obj = json_decode($content, true);
+    protected function processResult(string $content): ?array {
+        $obj = processResult($content);
 
         if ($obj === null) {
             $obj = [
@@ -103,7 +91,7 @@ class AipSpeech extends AipBase {
      *
      * @return array
      */
-    public function asr($speech, $format, $rate, $options = []) {
+    public function asr(string $speech, string $format, int $rate, array $options = []): array {
         $data = [];
 
         if (!empty($speech)) {
@@ -128,9 +116,7 @@ class AipSpeech extends AipBase {
      *
      * @return array
      */
-    public function synthesis($text, $lang = 'zh', $ctp = 1, $options = []) {
-        $data = [];
-
+    public function synthesis(string $text, string $lang = 'zh', int $ctp = 1, array $options = []): array {
         $data['tex'] = $text;
         $data['lan'] = $lang;
         $data['ctp'] = $ctp;
@@ -145,5 +131,4 @@ class AipSpeech extends AipBase {
 
         return $result;
     }
-
 }

@@ -21,36 +21,16 @@ namespace Baidu\Aip;
 use Baidu\Aip\Lib\AipBase;
 
 /**
- * 黄反识别
+ * UD = UserDefined
  */
 class AipImageCensor extends AipBase {
-
-    /**
-     * @var string
-     */
-    private $imageCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/img_censor/v2/user_defined';
-
-    /**
-     * @var string
-     */
-    private $textCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/text_censor/v2/user_defined';
-
-    /**
-     * @var string
-     */
-    private $voiceCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/voice_censor/v2/user_defined';
-
-    /**
-     * @var string
-     */
-    private $videoCensorUserDefinedUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/video_censor/v2/user_defined';
 
     /**
      * @param string $image 图像
      *
      * @return array
      */
-    public function imageCensorUserDefined(string $image): array {
+    public function imageCensorUD(string $image): array {
         $isUrl = substr(trim($image), 0, 4) === 'http';
 
         if (!$isUrl) {
@@ -59,7 +39,7 @@ class AipImageCensor extends AipBase {
             $data['imgUrl'] = $image;
         }
 
-        return $this->request($this->imageCensorUserDefinedUrl, $data);
+        return $this->request(API_IMAGE_CENSOR_UD, $data);
     }
 
     /**
@@ -67,8 +47,8 @@ class AipImageCensor extends AipBase {
      *
      * @return array
      */
-    public function textCensorUserDefined(string $text): array {
-        return $this->request($this->textCensorUserDefinedUrl, ['text' => $text]);
+    public function textCensorUD(string $text): array {
+        return $this->request(API_TEXT_CENSOR_UD, ['text' => $text]);
     }
 
     /**
@@ -78,7 +58,7 @@ class AipImageCensor extends AipBase {
      *
      * @return array
      */
-    public function voiceCensorUserDefined(string $voice, string $fmt, array $options = []): array {
+    public function voiceCensorUD(string $voice, string $fmt, array $options = []): array {
         $isUrl = substr(trim($voice), 0, 4) === 'http';
 
         if (!$isUrl) {
@@ -90,7 +70,7 @@ class AipImageCensor extends AipBase {
         $data['fmt'] = $fmt;
         $data = array_merge($data, $options);
 
-        return $this->request($this->voiceCensorUserDefinedUrl, $data);
+        return $this->request(API_VOICE_CENSOR_UD, $data);
     }
 
     /**
@@ -101,13 +81,13 @@ class AipImageCensor extends AipBase {
      *
      * @return array
      */
-    public function videoCensorUserDefined(string $name, string $videoUrl, string $extId, array $options = []): array {
+    public function videoCensorUD(string $name, string $videoUrl, string $extId, array $options = []): array {
         $data['name'] = $name;
         $data['videoUrl'] = $videoUrl;
         $data['extId'] = $extId;
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->videoCensorUserDefinedUrl, $data);
+        return $this->request(API_VIDEO_CENSOR_UD, $data);
     }
 }

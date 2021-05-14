@@ -27,7 +27,9 @@
         "psr-4": {
             "Baidu\\Aip\\": "src"
         },
-        "files": ["src/Helper/helper.php"]
+        "files": [
+            "src/Helper/*"
+        ]
     },
     "config": {
         "sort-packages": true,

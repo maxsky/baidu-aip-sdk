@@ -23,63 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipBodyAnalysis extends AipBase {
 
     /**
-     * 人体关键点识别 body_analysis api url
-     *
-     * @var string
-     */
-    private $bodyAnalysisUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_analysis';
-
-    /**
-     * 人体检测与属性识别 body_attr api url
-     *
-     * @var string
-     */
-    private $bodyAttrUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_attr';
-
-    /**
-     * 人流量统计 body_num api url
-     *
-     * @var string
-     */
-    private $bodyNumUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_num';
-
-    /**
-     * 手势识别 gesture api url
-     *
-     * @var string
-     */
-    private $gestureUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/gesture';
-
-    /**
-     * 人像分割 body_seg api url
-     *
-     * @var string
-     */
-    private $bodySegUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg';
-
-    /**
-     * 驾驶行为分析 driver_behavior api url
-     *
-     * @var string
-     */
-    private $driverBehaviorUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/driver_behavior';
-
-    /**
-     * 人流量统计-动态版 body_tracking api url
-     *
-     * @var string
-     */
-    private $bodyTrackingUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_tracking';
-
-    /**
-     * 手部关键点识别 hand_analysis api url
-     *
-     * @var string
-     */
-    private $handAnalysisUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/hand_analysis';
-
-
-    /**
      * 人体关键点识别接口
      *
      * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
@@ -88,12 +31,12 @@ class AipBodyAnalysis extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function bodyAnalysis(string $image, $options = []): array {
+    public function bodyAnalysis(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bodyAnalysisUrl, $data);
+        return $this->request(API_BODY_ANALYSIS, $data);
     }
 
     /**
@@ -110,12 +53,12 @@ class AipBodyAnalysis extends AipBase {
      *   参数值可以是可选值的组合，用逗号分隔；**如果无此参数默认输出全部21个属性**
      * @return array
      */
-    public function bodyAttr(string $image, $options = []): array {
+    public function bodyAttr(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bodyAttrUrl, $data);
+        return $this->request(API_BODY_ATTR, $data);
     }
 
     /**
@@ -130,12 +73,12 @@ class AipBodyAnalysis extends AipBase {
      *   show 是否输出渲染的图片，默认不返回，**选true时返回渲染后的图片(base64)**，其它无效值或为空则默认false
      * @return array
      */
-    public function bodyNum(string $image, $options = []): array {
+    public function bodyNum(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bodyNumUrl, $data);
+        return $this->request(API_BODY_NUM, $data);
     }
 
     /**
@@ -147,12 +90,12 @@ class AipBodyAnalysis extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function gesture(string $image, $options = []): array {
+    public function gesture(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->gestureUrl, $data);
+        return $this->request(API_GESTURE, $data);
     }
 
     /**
@@ -166,12 +109,12 @@ class AipBodyAnalysis extends AipBase {
      *   人像前景灰度图<br>foreground - 人像前景抠图，透明背景<br>2）type 参数值可以是可选值的组合，用逗号分隔；如果无此参数默认输出全部3类结果图
      * @return array
      */
-    public function bodySeg(string $image, $options = []): array {
+    public function bodySeg(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bodySegUrl, $data);
+        return $this->request(API_BODY_SEG, $data);
     }
 
     /**
@@ -186,12 +129,12 @@ class AipBodyAnalysis extends AipBase {
      *   未系安全带，<br>both_hands_leaving_wheel // 双手离开方向盘，<br>not_facing_front // 视角未看前方
      * @return array
      */
-    public function driverBehavior(string $image, $options = []): array {
+    public function driverBehavior(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->driverBehaviorUrl, $data);
+        return $this->request(API_DRIVER_BEHAVIOR, $data);
     }
 
     /**
@@ -209,13 +152,13 @@ class AipBodyAnalysis extends AipBase {
      *   当dynamic为True时，必填；静态人数统计时，只统计区域内的人，缺省时为全图统计。<br>动态人流量统计时，进出区域的人流会被统计。<br>逗号分隔，如‘x1,y1,x2,y2,x3,y3...xn,yn'，按顺序依次给出每个顶点的xy坐标（默认尾点和首点相连），形成闭合多边形区域。<br>服务会做范围（顶点左边需在图像范围内）及个数校验（数组长度必须为偶数，且大于3个顶点）。只支持单个多边形区域，建议设置矩形框，即4个顶点。**坐标取值不能超过图像宽度和高度，比如1280的宽度，坐标值最小建议从1开始，最大到1279**。
      * @return array
      */
-    public function bodyTracking(string $image, string $dynamic, $options = []): array {
+    public function bodyTracking(string $image, string $dynamic, array $options = []): array {
         $data['image'] = base64_encode($image);
         $data['dynamic'] = $dynamic;
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bodyTrackingUrl, $data);
+        return $this->request(API_BODY_TRACKING, $data);
     }
 
     /**
@@ -227,11 +170,11 @@ class AipBodyAnalysis extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function handAnalysis(string $image, $options = []): array {
+    public function handAnalysis(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->handAnalysisUrl, $data);
+        return $this->request(API_HAND_ANALYSIS, $data);
     }
 }

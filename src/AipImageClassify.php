@@ -23,149 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageClassify extends AipBase {
 
     /**
-     * 通用物体识别 advanced_general api url
-     *
-     * @var string
-     */
-    private $advancedGeneralUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general';
-
-    /**
-     * 菜品识别 dish_detect api url
-     *
-     * @var string
-     */
-    private $dishDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v2/dish';
-
-    /**
-     * 车辆识别 car_detect api url
-     *
-     * @var string
-     */
-    private $carDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/car';
-
-    /**
-     * 车辆检测 vehicle_detect api url
-     *
-     * @var string
-     */
-    private $vehicleDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/vehicle_detect';
-
-    /**
-     * 车辆外观损伤识别 vehicle_damage api url
-     *
-     * @var string
-     */
-    private $vehicleDamageUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/vehicle_damage';
-
-    /**
-     * logo商标识别 logo_search api url
-     *
-     * @var string
-     */
-    private $logoSearchUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v2/logo';
-
-    /**
-     * logo商标识别—添加 logo_add api url
-     *
-     * @var string
-     */
-    private $logoAddUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/v1/logo/add';
-
-    /**
-     * logo商标识别—删除 logo_delete api url
-     *
-     * @var string
-     */
-    private $logoDeleteUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/v1/logo/delete';
-
-    /**
-     * 动物识别 animal_detect api url
-     *
-     * @var string
-     */
-    private $animalDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/animal';
-
-    /**
-     * 植物识别 plant_detect api url
-     *
-     * @var string
-     */
-    private $plantDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/plant';
-
-    /**
-     * 图像主体检测 object_detect api url
-     *
-     * @var string
-     */
-    private $objectDetectUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/object_detect';
-
-    /**
-     * 地标识别 landmark api url
-     *
-     * @var string
-     */
-    private $landmarkUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/landmark';
-
-    /**
-     * 花卉识别 flower api url
-     *
-     * @var string
-     */
-    private $flowerUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/flower';
-
-    /**
-     * 食材识别 ingredient api url
-     *
-     * @var string
-     */
-    private $ingredientUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/classify/ingredient';
-
-    /**
-     * 红酒识别 redwine api url
-     *
-     * @var string
-     */
-    private $redwineUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/redwine';
-
-    /**
-     * 货币识别 currency api url
-     *
-     * @var string
-     */
-    private $currencyUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/currency';
-
-    /**
-     * 菜品识别-添加
-     *
-     * @var string
-     */
-    private $customDishAddUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/dish/add";
-    /**
-     * 菜品识别-搜索
-     *
-     * @var string
-     */
-    private $customDishSearchUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/dish/search";
-    /**
-     * 菜品识别-删除
-     *
-     * @var string
-     */
-    private $customDishDeleteUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/dish/delete";
-    /**
-     * 多目标识别
-     *
-     * @var string
-     */
-    private $multiObjectDetectUrl = "https://aip.baidubce.com/rest/2.0/image-classify/v1/multi_object_detect";
-    /**
-     * 组合接口
-     *
-     * @var string
-     */
-    private $combinationUrl = "https://aip.baidubce.com/api/v1/solution/direct/imagerecognition/combination";
-
-    /**
      * 通用物体识别接口
      *
      * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
@@ -180,7 +37,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->advancedGeneralUrl, $data);
+        return $this->request(API_ADVANCED_GENERAL, $data);
     }
 
     /**
@@ -200,7 +57,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->dishDetectUrl, $data);
+        return $this->request(API_DISH_DETECT, $data);
     }
 
     /**
@@ -219,7 +76,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->carDetectUrl, $data);
+        return $this->request(API_CAR_DETECT, $data);
     }
 
     /**
@@ -239,7 +96,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vehicleDetectUrl, $data);
+        return $this->request(API_VEHICLE_DETECT, $data);
     }
 
     /**
@@ -256,7 +113,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vehicleDamageUrl, $data);
+        return $this->request(API_VEHICLE_DAMAGE, $data);
     }
 
     /**
@@ -269,12 +126,12 @@ class AipImageClassify extends AipBase {
      *   custom_lib 是否只使用自定义logo库的结果，默认false：返回自定义库+默认库的识别结果
      * @return array
      */
-    public function logoSearch(string $image, array $options = []): array {
+    public function logoDetect(string $image, array $options = []): array {
         $data['image'] = base64_encode($image);
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->logoSearchUrl, $data);
+        return $this->request(API_LOGO_DETECT, $data);
     }
 
     /**
@@ -293,7 +150,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->logoAddUrl, $data);
+        return $this->request(API_LOGO_ADD, $data);
     }
 
     /**
@@ -310,7 +167,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->logoDeleteUrl, $data);
+        return $this->request(API_LOGO_DELETE, $data);
     }
 
     /**
@@ -327,7 +184,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->logoDeleteUrl, $data);
+        return $this->request(API_LOGO_DELETE, $data);
     }
 
     /**
@@ -346,7 +203,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->animalDetectUrl, $data);
+        return $this->request(API_ANIMAL_DETECT, $data);
     }
 
     /**
@@ -364,7 +221,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->plantDetectUrl, $data);
+        return $this->request(API_PLANT_DETECT, $data);
     }
 
     /**
@@ -382,7 +239,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->objectDetectUrl, $data);
+        return $this->request(API_OBJECT_DETECT, $data);
     }
 
     /**
@@ -399,7 +256,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->landmarkUrl, $data);
+        return $this->request(API_LANDMARK_DETECT, $data);
     }
 
     /**
@@ -418,7 +275,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->flowerUrl, $data);
+        return $this->request(API_FLOWER_DETECT, $data);
     }
 
     /**
@@ -436,7 +293,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->ingredientUrl, $data);
+        return $this->request(API_INGREDIENT_DETECT, $data);
     }
 
     /**
@@ -453,7 +310,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->redwineUrl, $data);
+        return $this->request(API_RED_WINE_DETECT, $data);
     }
 
     /**
@@ -470,7 +327,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->currencyUrl, $data);
+        return $this->request(API_CURRENCY_DETECT, $data);
     }
 
     /**
@@ -489,7 +346,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->customDishAddUrl, $data);
+        return $this->request(API_DISH_ADD, $data);
     }
 
     /**
@@ -506,7 +363,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->customDishSearchUrl, $data);
+        return $this->request(API_DISH_SEARCH, $data);
     }
 
     /**
@@ -523,7 +380,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->customDishDeleteUrl, $data);
+        return $this->request(API_DISH_DELETE, $data);
     }
 
     /**
@@ -540,7 +397,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->customDishDeleteUrl, $data);
+        return $this->request(API_DISH_DELETE, $data);
     }
 
     /**
@@ -557,7 +414,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->multiObjectDetectUrl, $data);
+        return $this->request(API_MULTI_OBJECT_DETECT, $data);
     }
 
     /**
@@ -576,7 +433,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->combinationUrl, $data, ['Content-Type' => 'application/json;charset=utf-8']);
+        return $this->request(API_COMBINATION, $data, ['Content-Type' => 'application/json;charset=utf-8']);
     }
 
     /**
@@ -595,6 +452,6 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->combinationUrl, $data, ['Content-Type' => 'application/json;charset=utf-8']);
+        return $this->request(API_COMBINATION, $data, ['Content-Type' => 'application/json;charset=utf-8']);
     }
 }

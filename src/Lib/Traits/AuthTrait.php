@@ -70,6 +70,15 @@ trait AuthTrait {
     }
 
     /**
+     * 删除临时文件
+     *
+     * @return bool
+     */
+    private function deleteAuthObj(): bool {
+        return unlink($this->getAuthFilePath());
+    }
+
+    /**
      * 判断认证是否有权限
      *
      * @param array $authObj

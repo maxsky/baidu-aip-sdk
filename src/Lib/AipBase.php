@@ -29,22 +29,6 @@ class AipBase {
 
     use AuthTrait;
 
-    private $version = '2_2_20';
-
-    /**
-     * 获取 access token url
-     *
-     * @var string
-     */
-    private $accessTokenUrl = 'https://aip.baidubce.com/oauth/2.0/token';
-
-    /**
-     * 反馈接口
-     *
-     * @var string
-     */
-    private $reportUrl = 'https://aip.baidubce.com/rpc/2.0/feedback/v1/report';
-
     /**
      * appId
      *
@@ -99,7 +83,7 @@ class AipBase {
      *
      */
     public function getVersion(): string {
-        return $this->version;
+        return API_VERSION;
     }
 
     /**
@@ -125,21 +109,28 @@ class AipBase {
     }
 
     /**
+     * @return bool
+     */
+    public function cleanTempFile(): bool {
+        return $this->deleteAuthObj();
+    }
+
+    /**
      * Api 请求
      *
      * @param string $url
-     * @param mixed  $data
+     * @param array  $data
      * @param array  $headers
      *
      * @return array|null
      */
-    protected function request(string $url, $data, array $headers = []): ?array {
+    protected function request(string $url, array $data, array $headers = []): ?array {
         $params = [];
 
         try {
             $authObj = $this->auth();
 
-            if ($this->isCloudUser === false) {
+            if (!$this->isCloudUser) {
                 $params['access_token'] = $authObj['access_token'];
             }
 
@@ -148,12 +139,19 @@ class AipBase {
 
             $headers = $this->getAuthHeaders('POST', $url, $params, $headers);
 
-            $response = $this->httpClient->post($url, [
+            $options = [
                 'query' => $params,
-                'form_params' => $data,
                 'headers' => $headers,
                 'proxy' => $this->proxies
-            ])->getBody();
+            ];
+
+            if (stripos($headers['Content-Type'], 'json') !== false) {
+                $options['json'] = $data;
+            } else {
+                $options['form_params'] = $data;
+            }
+
+            $response = $this->httpClient->post($url, $options)->getBody();
 
             $obj = processResult($response);
 
@@ -203,7 +201,7 @@ class AipBase {
             }
         }
 
-        $response = $this->httpClient->get($this->accessTokenUrl, [
+        $response = $this->httpClient->get(API_GET_ACCESS_TOKEN, [
             'query' => [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->apiKey,
@@ -226,7 +224,7 @@ class AipBase {
      */
     private function processRequest(array &$params) {
         $params['aipSdk'] = 'php';
-        $params['aipSdkVersion'] = $this->version;
+        $params['aipSdkVersion'] = $this->getVersion();
     }
 
     /**
@@ -239,6 +237,6 @@ class AipBase {
     private function report(array $feedback): array {
         $data['feedback'] = $feedback;
 
-        return $this->request($this->reportUrl, $data);
+        return $this->request(API_REPORT, $data);
     }
 }

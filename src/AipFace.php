@@ -23,132 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipFace extends AipBase {
 
     /**
-     * 人脸检测 detect api url
-     *
-     * @var string
-     */
-    private $detectUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/detect';
-
-    /**
-     * 人脸搜索 search api url
-     *
-     * @var string
-     */
-    private $searchUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/search';
-
-    /**
-     * 人脸搜索 M:N 识别 multi_search api url
-     *
-     * @var string
-     */
-    private $multiSearchUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/multi-search';
-
-    /**
-     * 人脸注册 user_add api url
-     *
-     * @var string
-     */
-    private $userAddUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/add';
-
-    /**
-     * 人脸更新 user_update api url
-     *
-     * @var string
-     */
-    private $userUpdateUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/update';
-
-    /**
-     * 人脸删除 face_delete api url
-     *
-     * @var string
-     */
-    private $faceDeleteUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/face/delete';
-
-    /**
-     * 用户信息查询 user_get api url
-     *
-     * @var string
-     */
-    private $userGetUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/get';
-
-    /**
-     * 获取用户人脸列表 face_getlist api url
-     *
-     * @var string
-     */
-    private $faceGetListUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/face/getlist';
-
-    /**
-     * 获取用户列表 group_getusers api url
-     *
-     * @var string
-     */
-    private $groupGetUsersUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/group/getusers';
-
-    /**
-     * 复制用户 user_copy api url
-     *
-     * @var string
-     */
-    private $userCopyUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/copy';
-
-    /**
-     * 删除用户 user_delete api url
-     *
-     * @var string
-     */
-    private $userDeleteUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/delete';
-
-    /**
-     * 创建用户组 group_add api url
-     *
-     * @var string
-     */
-    private $groupAddUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/group/add';
-
-    /**
-     * 删除用户组 group_delete api url
-     *
-     * @var string
-     */
-    private $groupDeleteUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/group/delete';
-
-    /**
-     * 组列表查询 group_getlist api url
-     *
-     * @var string
-     */
-    private $groupGetlistUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/group/getlist';
-
-    /**
-     * 身份验证 person_verify api url
-     *
-     * @var string
-     */
-    private $personVerifyUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/person/verify';
-
-    /**
-     * 语音校验码接口 video_sessioncode api url
-     *
-     * @var string
-     */
-    private $videoSessionCodeUrl = 'https://aip.baidubce.com/rest/2.0/face/v1/faceliveness/sessioncode';
-
-    /**
-     * 在线活体检测 faceverify api url
-     *
-     * @var string
-     */
-    private $faceVerifyUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceverify';
-
-    /**
-     * 人脸比对 match api url
-     *
-     * @var string
-     */
-    private $matchUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/match';
-
-    /**
      * 人脸检测接口
      *
      * @param string $image     - 图片信息(**总数据大小应小于10M**)，图片上传方式根据image_type来判断
@@ -173,7 +47,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->detectUrl, json_encode($data), [
+        return $this->request(API_DETECT, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -204,7 +78,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->searchUrl, json_encode($data), [
+        return $this->request(API_SEARCH, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -234,7 +108,99 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->multiSearchUrl, json_encode($data), [
+        return $this->request(API_MULTI_SEARCH, $data, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+
+    /**
+     * 人脸比对接口
+     *
+     * @param array $images
+     *
+     * @return array
+     */
+    public function match(array $images): array {
+        return $this->request(API_MATCH, $images, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 在线活体检测接口
+     *
+     * @param array $images
+     *
+     * @return array
+     */
+    public function faceVerify(array $images): array {
+        return $this->request(API_FACE_VERIFY, $images, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 获取用户人脸列表接口
+     *
+     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
+     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function faceGetList(string $userId, string $groupId, array $options = []): array {
+        $data['user_id'] = $userId;
+        $data['group_id'] = $groupId;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_FACE_GET_LIST, $data, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 人脸删除接口
+     *
+     * @param string $userId    - 用户id（由数字、字母、下划线组成），长度限制128B
+     * @param string $groupId   - 用户组id（由数字、字母、下划线组成），长度限制128B
+     * @param string $faceToken - 需要删除的人脸图片token，（由数字、字母、下划线组成）长度限制64B
+     * @param array  $options   - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function faceDelete(string $userId, string $groupId, string $faceToken, array $options = []): array {
+        $data['user_id'] = $userId;
+        $data['group_id'] = $groupId;
+        $data['face_token'] = $faceToken;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_FACE_DELETE, $data, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 用户信息查询接口
+     *
+     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
+     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function getUser(string $userId, string $groupId, array $options = []): array {
+        $data['user_id'] = $userId;
+        $data['group_id'] = $groupId;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_USER_GET, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -268,7 +234,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->userAddUrl, json_encode($data), [
+        return $this->request(API_USER_ADD, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -302,114 +268,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->userUpdateUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 人脸删除接口
-     *
-     * @param string $userId    - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId   - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param string $faceToken - 需要删除的人脸图片token，（由数字、字母、下划线组成）长度限制64B
-     * @param array  $options   - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function faceDelete(string $userId, string $groupId, string $faceToken, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-        $data['face_token'] = $faceToken;
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->faceDeleteUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 用户信息查询接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function getUser(string $userId, string $groupId, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->userGetUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 获取用户人脸列表接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function faceGetlist(string $userId, string $groupId, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->faceGetListUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 获取用户列表接口
-     *
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   start 默认值0，起始序号
-     *   length 返回数量，默认值100，最大值1000
-     * @return array
-     */
-    public function getGroupUsers(string $groupId, array $options = []): array {
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->groupGetUsersUrl, json_encode($data), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 复制用户接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   src_group_id 从指定组里复制信息
-     *   dst_group_id 需要添加用户的组id
-     * @return array
-     */
-    public function userCopy(string $userId, array $options = []): array {
-        $data['user_id'] = $userId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request($this->userCopyUrl, json_encode($data), [
+        return $this->request(API_USER_UPDATE, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -430,7 +289,49 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->userDeleteUrl, json_encode($data), [
+        return $this->request(API_USER_DELETE, $data, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 复制用户接口
+     *
+     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     *   src_group_id 从指定组里复制信息
+     *   dst_group_id 需要添加用户的组id
+     * @return array
+     */
+    public function userCopy(string $userId, array $options = []): array {
+        $data['user_id'] = $userId;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_USER_COPY, $data, [
+            'Content-Type' => 'application/json',
+        ]);
+    }
+
+    /**
+     * 获取用户列表接口
+     *
+     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     *   start 默认值0，起始序号
+     *   length 返回数量，默认值100，最大值1000
+     * @return array
+     */
+    public function getGroupUsers(string $groupId, array $options = []): array {
+        $data['group_id'] = $groupId;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_GROUP_GET_USERS, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -448,7 +349,7 @@ class AipFace extends AipBase {
         $data['group_id'] = $groupId;
 
         $data = array_merge($data, $options);
-        return $this->request($this->groupAddUrl, json_encode($data), [
+        return $this->request(API_GROUP_ADD, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -467,7 +368,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->groupDeleteUrl, json_encode($data), [
+        return $this->request(API_GROUP_DELETE, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -483,7 +384,7 @@ class AipFace extends AipBase {
      * @return array
      */
     public function getGroupList(array $options = []): array {
-        return $this->request($this->groupGetlistUrl, json_encode($options), [
+        return $this->request(API_GROUP_GET_LIST, $options, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -514,7 +415,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->personVerifyUrl, json_encode($data), [
+        return $this->request(API_PERSON_VERIFY, $data, [
             'Content-Type' => 'application/json',
         ]);
     }
@@ -528,34 +429,8 @@ class AipFace extends AipBase {
      *   appid 百度云创建应用时的唯一标识ID
      * @return array
      */
-    public function videoSessionCode(array $options = []): array {
-        return $this->request($this->videoSessionCodeUrl, json_encode($options), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 在线活体检测接口
-     *
-     * @param array $images
-     *
-     * @return array
-     */
-    public function faceVerify(array $images): array {
-        return $this->request($this->faceVerifyUrl, json_encode($images), [
-            'Content-Type' => 'application/json',
-        ]);
-    }
-
-    /**
-     * 人脸比对接口
-     *
-     * @param array $images
-     *
-     * @return array
-     */
-    public function match(array $images): array {
-        return $this->request($this->matchUrl, json_encode($images), [
+    public function sessionCode(array $options = []): array {
+        return $this->request(API_SESSION_CODE, $options, [
             'Content-Type' => 'application/json',
         ]);
     }

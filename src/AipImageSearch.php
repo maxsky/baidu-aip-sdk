@@ -23,119 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageSearch extends AipBase {
 
     /**
-     * 相同图检索—入库 same_hq_add api url
-     *
-     * @var string
-     */
-    private $sameHqAddUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/add';
-
-    /**
-     * 相同图检索—检索 same_hq_search api url
-     *
-     * @var string
-     */
-    private $sameHqSearchUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/search';
-
-    /**
-     * 相同图检索—更新 same_hq_update api url
-     *
-     * @var string
-     */
-    private $sameHqUpdateUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/update';
-
-    /**
-     * 相同图检索—删除 same_hq_delete api url
-     *
-     * @var string
-     */
-    private $sameHqDeleteUrl = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/delete';
-
-    /**
-     * 相似图检索—入库 similar_add api url
-     *
-     * @var string
-     */
-    private $similarAddUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/add';
-
-    /**
-     * 相似图检索—检索 similar_search api url
-     *
-     * @var string
-     */
-    private $similarSearchUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/search';
-
-    /**
-     * 相似图检索—更新 similar_update api url
-     *
-     * @var string
-     */
-    private $similarUpdateUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/update';
-
-    /**
-     * 相似图检索—删除 similar_delete api url
-     *
-     * @var string
-     */
-    private $similarDeleteUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/delete';
-
-    /**
-     * 商品检索—入库 product_add api url
-     *
-     * @var string
-     */
-    private $productAddUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/add';
-
-    /**
-     * 商品检索—检索 product_search api url
-     *
-     * @var string
-     */
-    private $productSearchUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/search';
-
-    /**
-     * 商品检索—更新 product_update api url
-     *
-     * @var string
-     */
-    private $productUpdateUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/update';
-
-    /**
-     * 商品检索—删除 product_delete api url
-     *
-     * @var string
-     */
-    private $productDeleteUrl = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/delete';
-
-
-    /**
-     * 绘本图片搜索—入库-image
-     *
-     * @var string
-     */
-    private $pictureBookAdd = "https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/add";
-
-    /**
-     * 绘本图片搜索—入库-检索
-     *
-     * @var string
-     */
-    private $pictureBookSearch = "https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/search";
-
-    /**
-     * 绘本图片搜索—入库-删除
-     *
-     * @var string
-     */
-    private $pictureBookDelete = "https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/delete";
-
-    /**
-     * 绘本图片搜索—入库-更新
-     *
-     * @var string
-     */
-    private $pictureBookUpdate = "https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/update";
-
-    /**
      * 相同图检索—入库接口
      *
      * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
@@ -152,7 +39,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqAddUrl, $data);
+        return $this->request(API_SAME_HQ_ADD, $data);
     }
 
     /**
@@ -173,7 +60,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqAddUrl, $data);
+        return $this->request(API_SAME_HQ_ADD, $data);
     }
 
     /**
@@ -194,7 +81,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqSearchUrl, $data);
+        return $this->request(API_SAME_HQ_SEARCH, $data);
     }
 
     /**
@@ -216,7 +103,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqSearchUrl, $data);
+        return $this->request(API_SAME_HQ_SEARCH, $data);
     }
 
     /**
@@ -235,7 +122,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqUpdateUrl, $data);
+        return $this->request(API_SAME_HQ_UPDATE, $data);
     }
 
     /**
@@ -255,7 +142,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqUpdateUrl, $data);
+        return $this->request(API_SAME_HQ_UPDATE, $data);
     }
 
     /**
@@ -274,7 +161,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqUpdateUrl, $data);
+        return $this->request(API_SAME_HQ_UPDATE, $data);
     }
 
     /**
@@ -291,7 +178,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqDeleteUrl, $data);
+        return $this->request(API_SAME_HQ_DELETE, $data);
     }
 
     /**
@@ -309,7 +196,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqDeleteUrl, $data);
+        return $this->request(API_SAME_HQ_DELETE, $data);
     }
 
     /**
@@ -326,7 +213,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sameHqDeleteUrl, $data);
+        return $this->request(API_SAME_HQ_DELETE, $data);
     }
 
     /**
@@ -346,7 +233,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarAddUrl, $data);
+        return $this->request(API_SIMILAR_ADD, $data);
     }
 
     /**
@@ -367,7 +254,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarAddUrl, $data);
+        return $this->request(API_SIMILAR_ADD, $data);
     }
 
     /**

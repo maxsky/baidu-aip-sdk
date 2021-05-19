@@ -23,48 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipKg extends AipBase {
 
     /**
-     * 创建任务 create_task api url
-     *
-     * @var string
-     */
-    private $createTaskUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_create';
-
-    /**
-     * 更新任务 update_task api url
-     *
-     * @var string
-     */
-    private $updateTaskUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_update';
-
-    /**
-     * 获取任务详情 task_info api url
-     *
-     * @var string
-     */
-    private $taskInfoUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_info';
-
-    /**
-     * 以分页的方式查询当前用户所有的任务信息 task_query api url
-     *
-     * @var string
-     */
-    private $taskQueryUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_query';
-
-    /**
-     * 启动任务 task_start api url
-     *
-     * @var string
-     */
-    private $taskStartUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_start';
-
-    /**
-     * 查询任务状态 task_status api url
-     *
-     * @var string
-     */
-    private $taskStatusUrl = 'https://aip.baidubce.com/rest/2.0/kg/v1/pie/task_status';
-
-    /**
      * 创建任务接口
      *
      * @param string $name             - 任务名字
@@ -88,7 +46,7 @@ class AipKg extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->createTaskUrl, $data);
+        return $this->request(API_TASK_CREATE, $data);
     }
 
     /**
@@ -110,7 +68,7 @@ class AipKg extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->updateTaskUrl, $data);
+        return $this->request(API_TASK_UPDATE, $data);
     }
 
     /**
@@ -127,7 +85,7 @@ class AipKg extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taskInfoUrl, $data);
+        return $this->request(API_TASK_INFO, $data);
     }
 
     /**
@@ -144,7 +102,7 @@ class AipKg extends AipBase {
      * @return array
      */
     public function getUserTasks(array $options = []): array {
-        return $this->request($this->taskQueryUrl, $options);
+        return $this->request(API_TASK_QUERY, $options);
     }
 
     /**
@@ -161,7 +119,7 @@ class AipKg extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taskStartUrl, $data);
+        return $this->request(API_TASK_START, $data);
     }
 
     /**
@@ -178,6 +136,6 @@ class AipKg extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taskStatusUrl, $data);
+        return $this->request(API_TASK_STATUS, $data);
     }
 }

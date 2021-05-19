@@ -23,130 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipNlp extends AipBase {
 
     /**
-     * 词法分析 lexer api url
-     *
-     * @var string
-     */
-    private $lexerUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer';
-
-    /**
-     * 词法分析（定制版） lexer_custom api url
-     *
-     * @var string
-     */
-    private $lexerCustomUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer_custom';
-
-    /**
-     * 依存句法分析 dep_parser api url
-     *
-     * @var string
-     */
-    private $depParserUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/depparser';
-
-    /**
-     * 词向量表示 word_embedding api url
-     *
-     * @var string
-     */
-    private $wordEmbeddingUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v2/word_emb_vec';
-
-    /**
-     * DNN语言模型 dnnlm_cn api url
-     *
-     * @var string
-     */
-    private $dnnlmCnUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v2/dnnlm_cn';
-
-    /**
-     * 词义相似度 word_sim_embedding api url
-     *
-     * @var string
-     */
-    private $wordSimEmbeddingUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v2/word_emb_sim';
-
-    /**
-     * 短文本相似度 simnet api url
-     *
-     * @var string
-     */
-    private $simnetUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v2/simnet';
-
-    /**
-     * 评论观点抽取 comment_tag api url
-     *
-     * @var string
-     */
-    private $commentTagUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v2/comment_tag';
-
-    /**
-     * 情感倾向分析 sentiment_classify api url
-     *
-     * @var string
-     */
-    private $sentimentClassifyUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify';
-
-    /**
-     * 文章标签 keyword api url
-     *
-     * @var string
-     */
-    private $keywordUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/keyword';
-
-    /**
-     * 文章分类 topic api url
-     *
-     * @var string
-     */
-    private $topicUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/topic';
-
-    /**
-     * 文本纠错 ecnet api url
-     *
-     * @var string
-     */
-    private $ecnetUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/ecnet';
-
-    /**
-     * 对话情绪识别接口 emotion api url
-     *
-     * @var string
-     */
-    private $emotionUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/emotion';
-
-    /**
-     * 新闻摘要接口 news_summary api url
-     *
-     * @var string
-     */
-    private $newsSummaryUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/news_summary';
-
-    /**
-     * 地址识别接口 address api url
-     *
-     * @var string
-     */
-    private $addressUrl = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/address';
-
-    /**
-     * 格式化结果
-     *
-     * @param string $content
-     *
-     * @return mixed
-     */
-    protected function processResult(string $content) {
-        $result = json_decode(
-            mb_convert_encoding($content, 'UTF8', 'GBK'), true, 512, JSON_BIGINT_AS_STRING
-        );
-
-        if (!$result) {
-            $result = json_decode($content, true, 512, JSON_BIGINT_AS_STRING);
-        }
-
-        return $result;
-    }
-
-    /**
      * 词法分析接口
      *
      * @param string $text    - 待分析文本（目前仅支持GBK编码），长度不超过65536字节
@@ -160,7 +36,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->lexerUrl, $data);
+        return $this->request(API_LEXER, $data);
     }
 
     /**
@@ -177,7 +53,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->lexerCustomUrl, $data);
+        return $this->request(API_LEXER_CUSTOM, $data);
     }
 
     /**
@@ -195,7 +71,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->depParserUrl, $data);
+        return $this->request(API_DEP_PARSER, $data);
     }
 
     /**
@@ -212,7 +88,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->wordEmbeddingUrl, $data);
+        return $this->request(API_WORD_EMBEDDING, $data);
     }
 
     /**
@@ -229,7 +105,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->dnnlmCnUrl, $data);
+        return $this->request(API_DNN_LM_CN, $data);
     }
 
     /**
@@ -249,7 +125,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->wordSimEmbeddingUrl, $data);
+        return $this->request(API_WORD_SIMILAR_EMBEDDING, $data);
     }
 
     /**
@@ -269,7 +145,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->simnetUrl, $data);
+        return $this->request(API_SIMNET, $data);
     }
 
     /**
@@ -287,7 +163,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->commentTagUrl, $data);
+        return $this->request(API_COMMENT_TAG, $data);
     }
 
     /**
@@ -304,7 +180,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->sentimentClassifyUrl, $data);
+        return $this->request(API_SENTIMENT_CLASSIFY, $data);
     }
 
     /**
@@ -323,7 +199,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->keywordUrl, $data);
+        return $this->request(API_KEYWORD, $data);
     }
 
     /**
@@ -336,14 +212,14 @@ class AipNlp extends AipBase {
      * @description options列表:
      * @return array
      */
-    public function topic($title, $content, $options = []) {
+    public function topic(string $title, string $content, array $options = []): array {
         $data['title'] = $title;
         $data['content'] = $content;
 
         $data = array_merge($data, $options);
         $data = mb_convert_encoding(json_encode($data), 'GBK', 'UTF8');
 
-        return $this->request($this->topicUrl, $data);
+        return $this->request(API_TOPIC, $data);
     }
 
     /**
@@ -360,7 +236,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->ecnetUrl, $data);
+        return $this->request(API_ECNET, $data);
     }
 
     /**
@@ -378,7 +254,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->emotionUrl, $data);
+        return $this->request(API_EMOTION, $data);
     }
 
     /**
@@ -400,7 +276,7 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->newsSummaryUrl, $data);
+        return $this->request(API_NEWS_SUMMARY, $data);
     }
 
     /**
@@ -417,6 +293,25 @@ class AipNlp extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->addressUrl, $data);
+        return $this->request(API_ADDRESS, $data);
+    }
+
+    /**
+     * 格式化结果
+     *
+     * @param string $content
+     *
+     * @return mixed
+     */
+    private function processResult(string $content) {
+        $result = json_decode(
+            mb_convert_encoding($content, 'UTF8', 'GBK'), true, 512, JSON_BIGINT_AS_STRING
+        );
+
+        if (!$result) {
+            $result = json_decode($content, true, 512, JSON_BIGINT_AS_STRING);
+        }
+
+        return $result;
     }
 }

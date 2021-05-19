@@ -23,287 +23,6 @@ use Baidu\Aip\Lib\AipBase;
 class AipOcr extends AipBase {
 
     /**
-     * 通用文字识别 general_basic api url
-     *
-     * @var string
-     */
-    private $generalBasicUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic';
-
-    /**
-     * 通用文字识别（高精度版） accurate_basic api url
-     *
-     * @var string
-     */
-    private $accurateBasicUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic';
-
-    /**
-     * 通用文字识别（含位置信息版） general api url
-     *
-     * @var string
-     */
-    private $generalUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general';
-
-    /**
-     * 通用文字识别（含位置高精度版） accurate api url
-     *
-     * @var string
-     */
-    private $accurateUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/accurate';
-
-    /**
-     * 通用文字识别（含生僻字版） general_enhanced api url
-     *
-     * @var string
-     */
-    private $generalEnhancedUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general_enhanced';
-
-    /**
-     * 网络图片文字识别 web_image api url
-     *
-     * @var string
-     */
-    private $webImageUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/webimage';
-
-    /**
-     * 身份证识别 idcard api url
-     *
-     * @var string
-     */
-    private $idCardUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/idcard';
-
-    /**
-     * 银行卡识别 bankcard api url
-     *
-     * @var string
-     */
-    private $bankcardUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard';
-
-    /**
-     * 驾驶证识别 driving_license api url
-     *
-     * @var string
-     */
-    private $drivingLicenseUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/driving_license';
-
-    /**
-     * 行驶证识别 vehicle_license api url
-     *
-     * @var string
-     */
-    private $vehicleLicenseUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_license';
-
-    /**
-     * 车牌识别 license_plate api url
-     *
-     * @var string
-     */
-    private $licensePlateUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate';
-
-    /**
-     * 营业执照识别 business_license api url
-     *
-     * @var string
-     */
-    private $businessLicenseUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/business_license';
-
-    /**
-     * 通用票据识别 receipt api url
-     *
-     * @var string
-     */
-    private $receiptUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/receipt';
-
-    /**
-     * 火车票识别 train_ticket api url
-     *
-     * @var string
-     */
-    private $trainTicketUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/train_ticket';
-
-    /**
-     * 出租车票识别 taxi_receipt api url
-     *
-     * @var string
-     */
-    private $taxiReceiptUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/taxi_receipt';
-
-    /**
-     * 表格文字识别同步接口 form api url
-     *
-     * @var string
-     */
-    private $formUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/form';
-
-    /**
-     * 表格文字识别 table_recognize api url
-     *
-     * @var string
-     */
-    private $tableRecognizeUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/form_ocr/request';
-
-    /**
-     * 表格识别结果 table_result_get api url
-     *
-     * @var string
-     */
-    private $tableResultGetUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/form_ocr/get_request_result';
-
-    /**
-     * VIN码识别 vin_code api url
-     *
-     * @var string
-     */
-    private $vinCodeUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vin_code';
-
-    /**
-     * 定额发票识别 quota_invoice api url
-     *
-     * @var string
-     */
-    private $quotaInvoiceUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/quota_invoice';
-
-    /**
-     * 户口本识别 household_register api url
-     *
-     * @var string
-     */
-    private $householdRegisterUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/household_register';
-
-    /**
-     * 港澳通行证识别 HK_Macau_exitentrypermit api url
-     *
-     * @var string
-     */
-    private $HKMacauExitEntryPermitUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/HK_Macau_exitentrypermit';
-
-    /**
-     * 台湾通行证识别 taiwan_exitentrypermit api url
-     *
-     * @var string
-     */
-    private $taiwanExitEntryPermitUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/taiwan_exitentrypermit';
-
-    /**
-     * 出生医学证明识别 birth_certificate api url
-     *
-     * @var string
-     */
-    private $birthCertificateUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/birth_certificate';
-
-    /**
-     * 机动车销售发票识别 vehicle_invoice api url
-     *
-     * @var string
-     */
-    private $vehicleInvoiceUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_invoice';
-
-    /**
-     * 车辆合格证识别 vehicle_certificate api url
-     *
-     * @var string
-     */
-    private $vehicleCertificateUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_certificate';
-
-    /**
-     * 税务局通用机打发票识别 invoice api url
-     *
-     * @var string
-     */
-    private $invoiceUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/invoice';
-
-    /**
-     * 行程单识别 air_ticket api url
-     *
-     * @var string
-     */
-    private $airTicketUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/air_ticket';
-
-    /**
-     * 保单识别 insurance_documents api url
-     *
-     * @var string
-     */
-    private $insuranceDocumentsUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/insurance_documents';
-
-    /**
-     * 增值税发票识别 vat_invoice api url
-     *
-     * @var string
-     */
-    private $vatInvoiceUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vat_invoice';
-
-    /**
-     * 二维码识别 qrcode api url
-     *
-     * @var string
-     */
-    private $qrcodeUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/qrcode';
-
-    /**
-     * 数字识别 numbers api url
-     *
-     * @var string
-     */
-    private $numbersUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/numbers';
-
-    /**
-     * 彩票识别 lottery api url
-     *
-     * @var string
-     */
-    private $lotteryUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/lottery';
-
-    /**
-     * 护照识别 passport api url
-     *
-     * @var string
-     */
-    private $passportUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/passport';
-
-    /**
-     * 名片识别 business_card api url
-     *
-     * @var string
-     */
-    private $businessCardUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/business_card';
-
-    /**
-     * 手写文字识别 handwriting api url
-     *
-     * @var string
-     */
-    private $handwritingUrl = 'https://aip.baidubce.com/rest/2.0/ocr/v1/handwriting';
-
-    /**
-     * 自定义模板文字识别 custom api url
-     *
-     * @var string
-     */
-    private $customUrl = 'https://aip.baidubce.com/rest/2.0/solution/v1/iocr/recognise';
-
-    /**
-     * 文档版面分析与识别
-     *
-     * @var string
-     */
-    private $docAnalysis = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis";
-
-    /**
-     * 仪器仪表盘读数识别
-     *
-     * @var string
-     */
-    private $meter = "https://aip.baidubce.com/rest/2.0/ocr/v1/meter";
-
-    /**
-     * 网络图片文字识别（含位置版）
-     *
-     * @var string
-     */
-    private $webimageLoc = "https://aip.baidubce.com/rest/2.0/ocr/v1/webimage_loc";
-
-
-    /**
      * 通用文字识别接口
      *
      * @url https://cloud.baidu.com/doc/OCR/s/zk3h7xz52#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
@@ -335,7 +54,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->generalBasicUrl, $data);
+        return $this->request(API_GENERAL_BASIC, $data);
     }
 
     /**
@@ -354,7 +73,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->accurateBasicUrl, $data);
+        return $this->request(API_ACCURATE_BASIC, $data);
     }
 
     /**
@@ -376,7 +95,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->generalUrl, $data);
+        return $this->request(API_GENERAL, $data);
     }
 
     /**
@@ -399,7 +118,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->generalUrl, $data);
+        return $this->request(API_GENERAL, $data);
     }
 
     /**
@@ -420,7 +139,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->accurateUrl, $data);
+        return $this->request(API_ACCURATE, $data);
     }
 
     /**
@@ -441,7 +160,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->generalEnhancedUrl, $data);
+        return $this->request(API_GENERAL_ENHANCED, $data);
     }
 
     /**
@@ -463,7 +182,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->generalEnhancedUrl, $data);
+        return $this->request(API_GENERAL_ENHANCED, $data);
     }
 
     /**
@@ -482,7 +201,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->webImageUrl, $data);
+        return $this->request(API_WEB_IMAGE, $data);
     }
 
     /**
@@ -503,7 +222,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->webImageUrl, $data);
+        return $this->request(API_WEB_IMAGE, $data);
     }
 
     /**
@@ -524,7 +243,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->idCardUrl, $data);
+        return $this->request(API_ID_CARD, $data);
     }
 
     /**
@@ -541,7 +260,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->bankcardUrl, $data);
+        return $this->request(API_BANKCARD, $data);
     }
 
     /**
@@ -559,7 +278,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->drivingLicenseUrl, $data);
+        return $this->request(API_DRIVING_LICENSE, $data);
     }
 
     /**
@@ -578,7 +297,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vehicleLicenseUrl, $data);
+        return $this->request(API_VEHICLE_LICENSE, $data);
     }
 
     /**
@@ -596,7 +315,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->licensePlateUrl, $data);
+        return $this->request(API_LICENSE_PLATE, $data);
     }
 
     /**
@@ -613,7 +332,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->businessLicenseUrl, $data);
+        return $this->request(API_BUSINESS_LICENSE, $data);
     }
 
     /**
@@ -634,7 +353,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->receiptUrl, $data);
+        return $this->request(API_RECEIPT, $data);
     }
 
     /**
@@ -651,7 +370,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->trainTicketUrl, $data);
+        return $this->request(API_TRAIN_TICKET, $data);
     }
 
     /**
@@ -668,7 +387,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->trainTicketUrl, $data);
+        return $this->request(API_TRAIN_TICKET, $data);
     }
 
     /**
@@ -685,7 +404,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taxiReceiptUrl, $data);
+        return $this->request(API_TAXI_RECEIPT, $data);
     }
 
     /**
@@ -703,7 +422,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taxiReceiptUrl, $data);
+        return $this->request(API_TAXI_RECEIPT, $data);
     }
 
     /**
@@ -720,7 +439,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->formUrl, $data);
+        return $this->request(API_FORM, $data);
     }
 
     /**
@@ -737,7 +456,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->tableRecognizeUrl, $data);
+        return $this->request(API_TABLE_RECOGNIZE, $data);
     }
 
     /**
@@ -755,7 +474,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->tableResultGetUrl, $data);
+        return $this->request(API_TABLE_GET_RESULT, $data);
     }
 
     /**
@@ -772,7 +491,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vinCodeUrl, $data);
+        return $this->request(API_VIN_CODE, $data);
     }
 
     /**
@@ -790,7 +509,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vinCodeUrl, $data);
+        return $this->request(API_VIN_CODE, $data);
     }
 
     /**
@@ -807,7 +526,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->quotaInvoiceUrl, $data);
+        return $this->request(API_QUOTA_INVOICE, $data);
     }
 
     /**
@@ -824,7 +543,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->householdRegisterUrl, $data);
+        return $this->request(API_HOUSEHOLD_REGISTER, $data);
     }
 
     /**
@@ -841,7 +560,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->HKMacauExitEntryPermitUrl, $data);
+        return $this->request(API_HK_MACAU_EXIT_ENTRY_PERMIT, $data);
     }
 
     /**
@@ -858,7 +577,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->taiwanExitEntryPermitUrl, $data);
+        return $this->request(API_TAIWAN_EXIT_ENTRY_PERMIT, $data);
     }
 
     /**
@@ -875,7 +594,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->birthCertificateUrl, $data);
+        return $this->request(API_BIRTH_CERTIFICATE, $data);
     }
 
     /**
@@ -892,7 +611,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vehicleInvoiceUrl, $data);
+        return $this->request(API_VEHICLE_INVOICE, $data);
     }
 
     /**
@@ -909,7 +628,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vehicleCertificateUrl, $data);
+        return $this->request(API_VEHICLE_CERTIFICATE, $data);
     }
 
     /**
@@ -927,7 +646,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->invoiceUrl, $data);
+        return $this->request(API_INVOICE, $data);
     }
 
     /**
@@ -945,7 +664,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->airTicketUrl, $data);
+        return $this->request(API_AIR_TICKET, $data);
     }
 
     /**
@@ -963,7 +682,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->insuranceDocumentsUrl, $data);
+        return $this->request(API_INSURANCE_DOCUMENTS, $data);
     }
 
     /**
@@ -980,7 +699,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vatInvoiceUrl, $data);
+        return $this->request(API_VAT_INVOICE, $data);
     }
 
     /**
@@ -1001,7 +720,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vatInvoiceUrl, $data);
+        return $this->request(API_VAT_INVOICE, $data);
     }
 
     /**
@@ -1021,7 +740,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->vatInvoiceUrl, $data);
+        return $this->request(API_VAT_INVOICE, $data);
     }
 
     /**
@@ -1038,7 +757,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->qrcodeUrl, $data);
+        return $this->request(API_QRCODE, $data);
     }
 
     /**
@@ -1057,7 +776,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->numbersUrl, $data);
+        return $this->request(API_NUMBERS, $data);
     }
 
     /**
@@ -1075,7 +794,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->lotteryUrl, $data);
+        return $this->request(API_LOTTERY, $data);
     }
 
     /**
@@ -1092,7 +811,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->passportUrl, $data);
+        return $this->request(API_PASSPORT, $data);
     }
 
     /**
@@ -1109,7 +828,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->businessCardUrl, $data);
+        return $this->request(API_BUSINESS_CARD, $data);
     }
 
     /**
@@ -1127,7 +846,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->handwritingUrl, $data);
+        return $this->request(API_HANDWRITING, $data);
     }
 
     /**
@@ -1147,7 +866,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->customUrl, $data);
+        return $this->request(API_RECOGNISE, $data);
     }
 
     /**
@@ -1209,7 +928,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->docAnalysis, $data);
+        return $this->request(API_DOC_ANALYSIS, $data);
     }
 
     /**
@@ -1225,7 +944,7 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->meter, $data);
+        return $this->request(API_METER, $data);
     }
 
     /**
@@ -1241,6 +960,6 @@ class AipOcr extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->webimageLoc, $data);
+        return $this->request(API_WEB_IMAGE_LOC, $data);
     }
 }

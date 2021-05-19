@@ -20,24 +20,7 @@ namespace Baidu\Aip;
 
 use Baidu\Aip\Lib\AipBase;
 
-/**
- * 百度语音
- */
 class AipSpeech extends AipBase {
-
-    /**
-     * url
-     *
-     * @var string
-     */
-    public $asrUrl = 'https://vop.baidu.com/server_api';
-
-    /**
-     * url
-     *
-     * @var string
-     */
-    public $ttsUrl = 'https://tsn.baidu.com/text2audio';
 
     /**
      * 处理请求参数
@@ -54,7 +37,7 @@ class AipSpeech extends AipBase {
             $data['cuid'] = md5($token);
         }
 
-        if ($url === $this->asrUrl) {
+        if ($url === API_ASR) {
             $data['token'] = $token;
             $data = json_encode($data);
         } else {
@@ -105,7 +88,7 @@ class AipSpeech extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->asrUrl, $data, []);
+        return $this->request(API_ASR, $data);
     }
 
     /**
@@ -123,7 +106,7 @@ class AipSpeech extends AipBase {
 
         $data = array_merge($data, $options);
 
-        $result = $this->request($this->ttsUrl, $data, []);
+        $result = $this->request(API_TTS, $data);
 
         if (isset($result['__json_decode_error'])) {
             return $result['__json_decode_error'];

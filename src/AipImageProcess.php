@@ -172,7 +172,7 @@ class AipImageProcess extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->skySeg, $data);
+        return $this->request(API_SKY_SEG, $data);
     }
 
     /**

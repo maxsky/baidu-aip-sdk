@@ -275,7 +275,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarSearchUrl, $data);
+        return $this->request(API_SIMILAR_SEARCH, $data);
     }
 
     /**
@@ -297,7 +297,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarSearchUrl, $data);
+        return $this->request(API_SIMILAR_SEARCH, $data);
     }
 
     /**
@@ -316,7 +316,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarUpdateUrl, $data);
+        return $this->request(API_SIMILAR_UPDATE, $data);
     }
 
     /**
@@ -336,7 +336,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarUpdateUrl, $data);
+        return $this->request(API_SIMILAR_UPDATE, $data);
     }
 
     /**
@@ -355,7 +355,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarUpdateUrl, $data);
+        return $this->request(API_SIMILAR_UPDATE, $data);
     }
 
     /**
@@ -372,7 +372,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarDeleteUrl, $data);
+        return $this->request(API_SIMILAR_DELETE, $data);
     }
 
     /**
@@ -390,7 +390,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarDeleteUrl, $data);
+        return $this->request(API_SIMILAR_DELETE, $data);
     }
 
     /**
@@ -407,7 +407,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->similarDeleteUrl, $data);
+        return $this->request(API_SIMILAR_DELETE, $data);
     }
 
     /**
@@ -429,7 +429,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productAddUrl, $data);
+        return $this->request(API_PRODUCT_ADD, $data);
     }
 
     /**
@@ -452,7 +452,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productAddUrl, $data);
+        return $this->request(API_PRODUCT_ADD, $data);
     }
 
     /**
@@ -473,7 +473,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productSearchUrl, $data);
+        return $this->request(API_PRODUCT_SEARCH, $data);
     }
 
     /**
@@ -495,7 +495,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productSearchUrl, $data);
+        return $this->request(API_PRODUCT_SEARCH, $data);
     }
 
     /**
@@ -515,7 +515,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productUpdateUrl, $data);
+        return $this->request(API_PRODUCT_UPDATE, $data);
     }
 
     /**
@@ -536,7 +536,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productUpdateUrl, $data);
+        return $this->request(API_PRODUCT_UPDATE, $data);
     }
 
     /**
@@ -556,7 +556,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productUpdateUrl, $data);
+        return $this->request(API_PRODUCT_UPDATE, $data);
     }
 
     /**
@@ -573,7 +573,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productDeleteUrl, $data);
+        return $this->request(API_PRODUCT_DELETE, $data);
     }
 
     /**
@@ -591,7 +591,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productDeleteUrl, $data);
+        return $this->request(API_PRODUCT_DELETE, $data);
     }
 
     /**
@@ -608,7 +608,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->productDeleteUrl, $data);
+        return $this->request(API_PRODUCT_DELETE, $data);
     }
 
     /**
@@ -627,7 +627,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookAdd, $data);
+        return $this->request(API_PICTURE_BOOK_ADD, $data);
     }
 
     /**
@@ -647,7 +647,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookAdd, $data);
+        return $this->request(API_PICTURE_BOOK_ADD, $data);
     }
 
     /**
@@ -664,7 +664,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookSearch, $data);
+        return $this->request(API_PICTURE_BOOK_SEARCH, $data);
     }
 
     /**
@@ -682,7 +682,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookSearch, $data);
+        return $this->request(API_PICTURE_BOOK_SEARCH, $data);
     }
 
     /**
@@ -699,7 +699,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookUpdate, $data);
+        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
     }
 
     /**
@@ -717,7 +717,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookUpdate, $data);
+        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
     }
 
     /**
@@ -734,7 +734,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookUpdate, $data);
+        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
     }
 
     /**
@@ -751,7 +751,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookDelete, $data);
+        return $this->request(API_PICTURE_BOOK_DELETE, $data);
     }
 
     /**
@@ -769,7 +769,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookDelete, $data);
+        return $this->request(API_PICTURE_BOOK_DELETE, $data);
     }
 
     /**
@@ -786,7 +786,7 @@ class AipImageSearch extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request($this->pictureBookDelete, $data);
+        return $this->request(API_PICTURE_BOOK_DELETE, $data);
     }
 }
 

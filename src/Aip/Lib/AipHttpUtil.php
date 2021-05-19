@@ -65,7 +65,7 @@ class AipHttpUtil {
      *
      * @return string
      */
-    public static function urlEncodeExceptSlash($path): string {
+    public static function urlEncodeExceptSlash(string $path): string {
         return str_replace('%2F', '/', AipHttpUtil::urlEncode($path));
     }
 

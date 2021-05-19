@@ -28,9 +28,8 @@ class AipSpeech extends AipBase {
      * @param string $url
      * @param array  $params
      * @param array  $data
-     * @param array  $headers
      */
-    protected function processRequest($url, array &$params, array &$data, array $headers) {
+    protected function processRequest($url, array &$params, array &$data) {
         $token = $params['access_token'] ?? '';
 
         if (empty($data['cuid'])) {

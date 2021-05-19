@@ -433,7 +433,7 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_COMBINATION, $data, ['Content-Type' => 'application/json;charset=utf-8']);
+        return $this->request(API_COMBINATION, $data, true);
     }
 
     /**
@@ -452,6 +452,6 @@ class AipImageClassify extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_COMBINATION, $data, ['Content-Type' => 'application/json;charset=utf-8']);
+        return $this->request(API_COMBINATION, $data, true);
     }
 }

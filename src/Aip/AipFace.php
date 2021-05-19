@@ -47,9 +47,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_DETECT, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_DETECT, $data, true);
     }
 
     /**
@@ -78,9 +76,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_SEARCH, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_SEARCH, $data, true);
     }
 
     /**
@@ -108,9 +104,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_MULTI_SEARCH, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_MULTI_SEARCH, $data, true);
     }
 
 
@@ -122,9 +116,7 @@ class AipFace extends AipBase {
      * @return array
      */
     public function match(array $images): array {
-        return $this->request(API_MATCH, $images, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_MATCH, $images, true);
     }
 
     /**
@@ -135,9 +127,7 @@ class AipFace extends AipBase {
      * @return array
      */
     public function faceVerify(array $images): array {
-        return $this->request(API_FACE_VERIFY, $images, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_FACE_VERIFY, $images, true);
     }
 
     /**
@@ -156,9 +146,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_FACE_GET_LIST, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_FACE_GET_LIST, $data, true);
     }
 
     /**
@@ -179,9 +167,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_FACE_DELETE, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_FACE_DELETE, $data, true);
     }
 
     /**
@@ -200,9 +186,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_USER_GET, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_USER_GET, $data, true);
     }
 
     /**
@@ -234,9 +218,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_USER_ADD, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_USER_ADD, $data, true);
     }
 
     /**
@@ -268,9 +250,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_USER_UPDATE, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_USER_UPDATE, $data, true);
     }
 
     /**
@@ -289,9 +269,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_USER_DELETE, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_USER_DELETE, $data, true);
     }
 
     /**
@@ -310,9 +288,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_USER_COPY, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_USER_COPY, $data, true);
     }
 
     /**
@@ -331,9 +307,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_GROUP_GET_USERS, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_GROUP_GET_USERS, $data, true);
     }
 
     /**
@@ -349,9 +323,7 @@ class AipFace extends AipBase {
         $data['group_id'] = $groupId;
 
         $data = array_merge($data, $options);
-        return $this->request(API_GROUP_ADD, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_GROUP_ADD, $data, true);
     }
 
     /**
@@ -368,9 +340,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_GROUP_DELETE, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_GROUP_DELETE, $data, true);
     }
 
     /**
@@ -384,9 +354,7 @@ class AipFace extends AipBase {
      * @return array
      */
     public function getGroupList(array $options = []): array {
-        return $this->request(API_GROUP_GET_LIST, $options, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_GROUP_GET_LIST, $options, true);
     }
 
     /**
@@ -415,9 +383,7 @@ class AipFace extends AipBase {
 
         $data = array_merge($data, $options);
 
-        return $this->request(API_PERSON_VERIFY, $data, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_PERSON_VERIFY, $data, true);
     }
 
     /**
@@ -430,8 +396,6 @@ class AipFace extends AipBase {
      * @return array
      */
     public function sessionCode(array $options = []): array {
-        return $this->request(API_SESSION_CODE, $options, [
-            'Content-Type' => 'application/json',
-        ]);
+        return $this->request(API_SESSION_CODE, $options, true);
     }
 }

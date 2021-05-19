@@ -1,6 +1,6 @@
 {
     "name": "maxsky/baidu-aip-sdk",
-    "description": "Baidu public ai php sdk",
+    "description": "Baidu public AI php sdk",
     "type": "library",
     "license": "Apache-2.0",
     "authors": [
@@ -25,10 +25,10 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Baidu\\Aip\\": "src"
+            "Baidu\\": "src"
         },
-        "files": [
-            "src/Helper/*"
+        "classmap": [
+            "src/Helper/"
         ]
     },
     "config": {

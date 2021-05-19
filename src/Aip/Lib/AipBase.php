@@ -57,6 +57,7 @@ class AipBase {
      */
     private $scope = 'brain_all_scope';
 
+    /** @var bool 是否云用户 */
     private $isCloudUser = false;
 
     private $proxies = [];
@@ -120,11 +121,11 @@ class AipBase {
      *
      * @param string $url
      * @param array  $data
-     * @param array  $headers
+     * @param bool   $is_json
      *
      * @return array|null
      */
-    protected function request(string $url, array $data, array $headers = []): ?array {
+    protected function request(string $url, array $data, bool $is_json = false): ?array {
         $params = [];
 
         try {
@@ -137,7 +138,7 @@ class AipBase {
             // 特殊处理
             $this->processRequest($params);
 
-            $headers = $this->getAuthHeaders('POST', $url, $params, $headers);
+            $headers = $this->getAuthHeaders('POST', $url, $params);
 
             $options = [
                 'query' => $params,
@@ -145,7 +146,7 @@ class AipBase {
                 'proxy' => $this->proxies
             ];
 
-            if (stripos($headers['Content-Type'], 'json') !== false) {
+            if ($is_json) {
                 $options['json'] = $data;
             } else {
                 $options['form_params'] = $data;

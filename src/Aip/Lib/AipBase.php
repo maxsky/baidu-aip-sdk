@@ -19,7 +19,6 @@
 namespace Baidu\Aip\Lib;
 
 use Baidu\Aip\Lib\Traits\AuthTrait;
-use Exception;
 use GuzzleHttp\Client;
 
 /**
@@ -29,50 +28,33 @@ class AipBase {
 
     use AuthTrait;
 
-    /**
-     * appId
-     *
-     * @var string
-     */
+    /** @var string */
     private $appId;
 
-    /**
-     * apiKey
-     *
-     * @var string
-     */
+    /** @var string */
     private $apiKey;
 
-    /**
-     * secretKey
-     *
-     * @var string
-     */
+    /** @var string */
     private $secretKey;
 
-    /**
-     * 权限
-     *
-     * @var array
-     */
+    /** @var array 权限 */
     private $scope = 'brain_all_scope';
 
-    /** @var bool 是否云用户 */
-    private $isCloudUser = false;
-
+    /** @var array 代理 */
     private $proxies = [];
 
+    /** @var Client GuzzleHttp Client */
     private $httpClient;
 
     /**
-     * @param string $appId
-     * @param string $apiKey
-     * @param string $secretKey
+     * @param string $app_id
+     * @param string $api_key
+     * @param string $secret_key
      */
-    public function __construct(string $appId, string $apiKey, string $secretKey) {
-        $this->appId = trim($appId);
-        $this->apiKey = trim($apiKey);
-        $this->secretKey = trim($secretKey);
+    public function __construct(string $app_id, string $api_key, string $secret_key) {
+        $this->appId = trim($app_id);
+        $this->apiKey = trim($api_key);
+        $this->secretKey = trim($secret_key);
 
         $this->httpClient = new Client();
     }
@@ -101,39 +83,20 @@ class AipBase {
     }
 
     /**
-     * @return AipBase
-     */
-    public function setCloudUser(): AipBase {
-        $this->isCloudUser = true;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function cleanTempFile(): bool {
-        return $this->deleteAuthObj();
-    }
-
-    /**
      * Api 请求
      *
      * @param string $url
      * @param array  $data
      * @param bool   $is_json
      *
-     * @return array|null
+     * @return array
      */
-    protected function request(string $url, array $data, bool $is_json = false): ?array {
-        $params = [];
+    protected function request(string $url, array $data, bool $is_json = false): array {
+        $obj = null;
+        $authObj = $this->auth();
 
-        try {
-            $authObj = $this->auth();
-
-            if (!$this->isCloudUser) {
-                $params['access_token'] = $authObj['access_token'];
-            }
+        if (isset($authObj['access_token'])) {
+            $params['access_token'] = $authObj['access_token'];
 
             // 特殊处理
             $this->processRequest($params);
@@ -155,65 +118,24 @@ class AipBase {
             $response = $this->httpClient->post($url, $options)->getBody();
 
             $obj = processResult($response);
+        }
 
-            if (!$this->isCloudUser && isset($obj['error_code']) && $obj['error_code'] == 110) {
-                $authObj = $this->auth(true);
+        if (!$obj || in_array($obj['error_code'], [100, 110, 111])) {
+            $authObj = $this->auth(true);
 
-                $params['access_token'] = $authObj['access_token'];
+            if ($authObj) {
+                $options['query']['access_token'] = $authObj['access_token'];
 
-                $response = $this->httpClient->post($url, [
-                    'headers' => $headers,
-                    'query' => $params,
-                    'form_params' => $data,
-                    'proxy' => $this->proxies
-                ])->getBody();
+                $response = $this->httpClient->post($url, $options)->getBody();
 
                 $obj = processResult($response);
-            }
-
-            if (empty($obj) || !isset($obj['error_code'])) {
-                $this->writeAuthObj($authObj);
-            }
-        } catch (Exception $e) {
-            return [
-                'error_code' => 'SDK108',
-                'error_msg' => 'connection or read data timeout',
-            ];
-        }
-
-        return $obj;
-    }
-
-    /**
-     * 认证
-     *
-     * @param bool $refresh 是否刷新
-     *
-     * @return array
-     * @throws Exception
-     */
-    private function auth(bool $refresh = false): array {
-        // 非过期刷新
-        if (!$refresh) {
-            $obj = $this->readAuthObj();
-
-            if ($obj) {
-                return $obj;
+            } else {
+                return [
+                    'error_code' => 110,
+                    'error_description' => 'Access token invalid or no longer valid'
+                ];
             }
         }
-
-        $response = $this->httpClient->get(API_GET_ACCESS_TOKEN, [
-            'query' => [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->apiKey,
-                'client_secret' => $this->secretKey
-            ],
-            'proxy' => $this->proxies
-        ])->getBody();
-
-        $obj = processResult($response);
-
-        $this->isCloudUser = !$this->isPermission($obj);
 
         return $obj;
     }
@@ -222,8 +144,10 @@ class AipBase {
      * 处理请求参数
      *
      * @param array $params
+     *
+     * @return void
      */
-    private function processRequest(array &$params) {
+    private function processRequest(array &$params): void {
         $params['aipSdk'] = 'php';
         $params['aipSdkVersion'] = $this->getVersion();
     }

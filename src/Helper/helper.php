@@ -7,6 +7,17 @@
  * Time: 13:13
  */
 
+if (!function_exists('isUrl')) {
+    /**
+     * @param string $content
+     *
+     * @return bool
+     */
+    function isUrl(string $content): bool {
+        return substr(trim($content), 0, 4) === 'http';
+    }
+}
+
 if (!function_exists('processResult')) {
     /**
      * @param string $content

@@ -30,3 +30,12 @@ const API_GESTURE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/gesture
 
 /** 手部关键点识别 */
 const API_HAND_ANALYSIS = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/hand_analysis';
+
+/** 危险行为识别 */
+const API_BODY_DANGER = 'https://aip.baidubce.com/rest/2.0/video-classify/v1/body_danger';
+
+/** 指尖检测 */
+const API_FINGERTIP = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/fingertip';
+
+/** 人像分割-证件照版 */
+const API_BODY_SEG_PHOTO = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg_photo';

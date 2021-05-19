@@ -20,7 +20,7 @@ namespace Baidu\Aip\Lib;
 
 class AipSampleSigner {
 
-    const BCE_AUTH_VERSION = "bce-auth-v1";
+    const BCE_AUTH_VERSION = 'bce-auth-v1';
     const BCE_PREFIX = 'x-bce-';
 
     // 不指定 headersToSign 情况下，默认签名 http 头，包括：
@@ -28,22 +28,18 @@ class AipSampleSigner {
     //    2.content-length
     //    3.content-type
     //    4.content-md5
-    public static $defaultHeadersToSign;
-
-    public static function __init() {
-        AipSampleSigner::$defaultHeadersToSign = [
-            'host',
-            'content-length',
-            'content-type',
-            'content-md5',
-        ];
-    }
+    public static $defaultHeadersToSign = [
+        'host',
+        'content-length',
+        'content-type',
+        'content-md5'
+    ];
 
     /**
      * 签名
      *
      * @param array  $credentials
-     * @param string $httpMethod
+     * @param string $method
      * @param string $path
      * @param array  $headers
      * @param array  $params
@@ -51,8 +47,8 @@ class AipSampleSigner {
      *
      * @return string
      */
-    public static function sign(array $credentials, string $httpMethod,
-                                string $path, array $headers, array $params, $options = []): string {
+    public static function sign(array $credentials, string $method,
+                                string $path, array $headers, array $params, array $options = []): string {
         // 设定签名有效时间
         if (!isset($options[AipSignOption::EXPIRATION_IN_SECONDS])) {
             // 默认值1800秒
@@ -74,7 +70,7 @@ class AipSampleSigner {
         }
 
         // 生成 authString
-        $authString = AipSampleSigner::BCE_AUTH_VERSION . '/' . $accessKeyId . '/'
+        $authString = self::BCE_AUTH_VERSION . '/' . $accessKeyId . '/'
             . $timestamp . '/' . $expirationInSeconds;
 
         // 使用 sk 和 authString 生成 signKey
@@ -95,7 +91,7 @@ class AipSampleSigner {
 
         // 生成标准化 header
         $canonicalHeader = AipHttpUtil::getCanonicalHeaders(
-            AipSampleSigner::getHeadersToSign($headers, $headersToSign)
+            self::getHeadersToSign($headers, $headersToSign)
         );
 
         // 整理 headersToSign，以 ';' 号连接
@@ -108,7 +104,7 @@ class AipSampleSigner {
         }
 
         // 组成标准请求串
-        $canonicalRequest = "$httpMethod\n$canonicalURI\n" . "$canonicalQueryString\n$canonicalHeader";
+        $canonicalRequest = "$method\n$canonicalURI\n$canonicalQueryString\n$canonicalHeader";
 
         // 使用 signKey 和标准请求串完成签名
         $signature = hash_hmac('sha256', $canonicalRequest, $signingKey);
@@ -152,7 +148,7 @@ class AipSampleSigner {
     /**
      * 检查 header 是不是默认参加签名的：
      * 1.是 host、content-type、content-md5、content-length 之一
-     * 2.以x-bce开头
+     * 2.以 x-bce 开头
      *
      * @param string $header
      *
@@ -161,11 +157,11 @@ class AipSampleSigner {
     public static function isDefaultHeaderToSign(string $header): bool {
         $header = strtolower(trim($header));
 
-        if (in_array($header, AipSampleSigner::$defaultHeadersToSign)) {
+        if (in_array($header, self::$defaultHeadersToSign)) {
             return true;
         }
 
         return substr_compare($header,
-                AipSampleSigner::BCE_PREFIX, 0, strlen(AipSampleSigner::BCE_PREFIX)) === 0;
+                self::BCE_PREFIX, 0, strlen(self::BCE_PREFIX)) === 0;
     }
 }

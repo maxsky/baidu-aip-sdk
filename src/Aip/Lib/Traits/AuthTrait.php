@@ -10,105 +10,68 @@
 namespace Baidu\Aip\Lib\Traits;
 
 use Baidu\Aip\Lib\AipSampleSigner;
-use Exception;
 
 trait AuthTrait {
 
-    /**
-     * 返回 access token 路径
-     *
-     * @return string
-     */
-    private function getAuthFilePath(): string {
-        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($this->apiKey);
-    }
+    use FileTrait;
 
     /**
-     * 读取本地缓存
+     * 认证
      *
-     * @return array
-     * @throws Exception array not exists keys
+     * @param bool $refresh 是否刷新
+     *
+     * @return array|null
      */
-    private function readAuthObj(): ?array {
-        $filePath = $this->getAuthFilePath();
-
-        if (file_exists($filePath)) {
-            $content = file_get_contents($this->getAuthFilePath());
-
-            if ($content) {
-                $obj = processResult($content);
-                $this->isCloudUser = $obj['is_cloud_user'];
-                $obj['is_read'] = true;
-
-                if ($this->isCloudUser || $obj['time'] + $obj['expires_in'] - 30 > time()) {
-                    return $obj;
-                }
+    private function auth(bool $refresh = false): ?array {
+        // 非过期刷新
+        if (!$refresh) {
+            if ($obj = $this->readFileObject()) {
+                return $obj;
             }
-        } else {
-            file_put_contents($filePath, '');
         }
 
-        return null;
-    }
+        $response = $this->httpClient->post(API_GET_ACCESS_TOKEN, [
+            'form_params' => [
+                'grant_type' => 'client_credentials',
+                'client_id' => $this->apiKey,
+                'client_secret' => $this->secretKey
+            ],
+            'proxy' => $this->proxies
+        ])->getBody();
 
-    /**
-     * 写入本地文件
-     *
-     * @param array $obj
-     *
-     * @return void
-     */
-    private function writeAuthObj(array $obj) {
-        if (isset($obj['is_read']) && $obj['is_read'] === true) {
-            return;
-        }
+        $obj = processResult($response);
 
-        $obj['time'] = time();
-        $obj['is_cloud_user'] = $this->isCloudUser;
+        $this->writeFileObject($obj);
 
-        file_put_contents($this->getAuthFilePath(), json_encode($obj));
-    }
-
-    /**
-     * 删除临时文件
-     *
-     * @return bool
-     */
-    private function deleteAuthObj(): bool {
-        return unlink($this->getAuthFilePath());
+        return $obj;
     }
 
     /**
      * 判断认证是否有权限
      *
-     * @param array $authObj
+     * @param array $auth_object
      *
-     * @return boolean
+     * @return bool
      */
-    private function isPermission(array $authObj): bool {
-        if (empty($authObj) || !isset($authObj['scope'])) {
+    private function isPermission(array $auth_object): bool {
+        if (empty($auth_object) || !isset($auth_object['scope'])) {
             return false;
         }
 
-        $scopes = explode(' ', $authObj['scope']);
+        $scopes = explode(' ', $auth_object['scope']);
 
         return in_array($this->scope, $scopes);
     }
 
     /**
-     * @param string $method HTTP method
+     * @param string $method
      * @param string $url
-     * @param array  $params 参数
+     * @param array  $params
      * @param array  $headers
      *
      * @return array
      */
     private function getAuthHeaders(string $method, string $url, array $params = [], array $headers = []): array {
-        // 不是云的老用户则不用在 header 中签名、认证
-        if ($this->isCloudUser === false) {
-            return $headers;
-        }
-
         $obj = parse_url($url);
 
         if (!empty($obj['query'])) {

@@ -21,17 +21,16 @@ namespace Baidu\Aip\Lib;
 use InvalidArgumentException;
 
 class AipHttpUtil {
+
     // 根据RFC 3986，除了：
     //   1.大小写英文字符
     //   2.阿拉伯数字
     //   3.点'.'、波浪线'~'、减号'-'以及下划线'_'
     // 以外都要编码
-    public static $PERCENT_ENCODED_STRINGS;
+    public static $PERCENT_ENCODED_STRINGS = [];
 
     // 填充编码数组
     public static function __init() {
-        AipHttpUtil::$PERCENT_ENCODED_STRINGS = [];
-
         for ($i = 0; $i < 256; ++$i) {
             AipHttpUtil::$PERCENT_ENCODED_STRINGS[$i] = sprintf('%%%02X', $i);
         }
@@ -46,12 +45,12 @@ class AipHttpUtil {
             AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
         }
 
-        //0-9不编码
+        // 0-9 不编码
         foreach (range('0', '9') as $ch) {
             AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
         }
 
-        //以下4个字符不编码
+        // 以下 4 个字符不编码
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('-')] = '-';
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('.')] = '.';
         AipHttpUtil::$PERCENT_ENCODED_STRINGS[ord('_')] = '_';

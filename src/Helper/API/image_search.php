@@ -7,46 +7,46 @@
  * Time: 12:44
  */
 
-/** 相同图 — 入库 */
-const API_SAME_HQ_ADD = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/add';
-
-/** 相同图 — 搜索 */
-const API_SAME_HQ_SEARCH = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/search';
-
-/** 相同图 — 更新 */
-const API_SAME_HQ_UPDATE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/update';
-
-/** 相同图 — 删除 */
-const API_SAME_HQ_DELETE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/delete';
-
-/** 相似图 — 入库 */
+/** 相似图片 — 入库 */
 const API_SIMILAR_ADD = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/add';
 
-/** 相似图 - 搜索 */
+/** 相似图片 - 检索 */
 const API_SIMILAR_SEARCH = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/search';
 
-/** 相似图 — 更新 */
+/** 相似图片 — 更新 */
 const API_SIMILAR_UPDATE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/update';
 
-/** 相似图 — 删除 */
+/** 相似图片 — 删除 */
 const API_SIMILAR_DELETE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/delete';
 
-/** 商品 - 入库 */
+/** 相同图片 — 入库 */
+const API_SAME_HQ_ADD = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/add';
+
+/** 相同图片 — 检索 */
+const API_SAME_HQ_SEARCH = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/search';
+
+/** 相同图片 — 更新 */
+const API_SAME_HQ_UPDATE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/update';
+
+/** 相同图片 — 删除 */
+const API_SAME_HQ_DELETE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/delete';
+
+/** 商品图片 - 入库 */
 const API_PRODUCT_ADD = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/add';
 
-/** 商品 - 搜索 */
+/** 商品图片 - 检索 */
 const API_PRODUCT_SEARCH = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/search';
 
-/** 商品 - 更新 */
+/** 商品图片 - 更新 */
 const API_PRODUCT_UPDATE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/update';
 
-/** 商品 - 删除 */
+/** 商品图片 - 删除 */
 const API_PRODUCT_DELETE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/delete';
 
 /** 绘本图片 - 入库 */
 const API_PICTURE_BOOK_ADD = 'https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/add';
 
-/** 绘本图片 - 搜索 */
+/** 绘本图片 - 检索 */
 const API_PICTURE_BOOK_SEARCH = 'https://aip.baidubce.com/rest/2.0/imagesearch/v1/realtime_search/picturebook/search';
 
 /** 绘本图片 - 删除 */

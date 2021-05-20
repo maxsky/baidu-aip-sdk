@@ -82,36 +82,232 @@ class AipFace extends AipBase {
     }
 
     /**
-     * 人脸搜索 M:N 识别接口
+     * 人脸搜索 M:N 识别
      *
-     * @param string $image       - 图片信息(**总数据大小应小于10M**)，图片上传方式根据image_type来判断
-     * @param string $imageType   - 图片类型     <br> **BASE64**:图片的base64值，base64编码后的图片数据，编码后的图片大小不超过2M； <br>**URL**:图片的
-     *                            URL地址( 可能由于网络等原因导致下载图片时间过长)； <br>**FACE_TOKEN**:
-     *                            人脸图片的唯一标识，调用人脸检测接口时，会为每个人脸图片赋予一个唯一的FACE_TOKEN，同一张图片多次检测得到的FACE_TOKEN是同一个。
-     * @param string $groupIdList - 从指定的group中进行查找 用逗号分隔，**上限20个**
-     * @param array  $options     - 可选参数对象，key: value都为string类型
+     * @url https://cloud.baidu.com/doc/FACE/s/Gk37c1uzc#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E-1
      *
-     * @description options列表:
-     *   max_face_num 最多处理人脸的数目<br>**默认值为1(仅检测图片中面积最大的那个人脸)** **最大值10**
-     *   match_threshold 匹配阈值（设置阈值后，score低于此阈值的用户信息将不会返回） 最大100 最小0 默认80 <br>**此阈值设置得越高，检索速度将会越快，推荐使用默认阈值`80`**
-     *   quality_control 图片质量控制  **NONE**: 不进行控制 **LOW**:较低的质量要求 **NORMAL**: 一般的质量要求 **HIGH**: 较高的质量要求 **默认 NONE**
-     *   liveness_control 活体检测控制  **NONE**: 不进行控制 **LOW**:较低的活体要求(高通过率 低攻击拒绝率) **NORMAL**: 一般的活体要求(平衡的攻击拒绝率, 通过率)
-     *   **HIGH**: 较高的活体要求(高攻击拒绝率 低通过率) **默认NONE** max_user_num 查找后返回的用户数量。返回相似度最高的几个用户，默认为1，最多返回50个。
+     * @param string $image         图片信息（数据大小应小于 10M，分辨率应小于 1920*1080）
+     * @param string $image_type    图片类型
+     * @param array  $group_id_list 从指定的 group 中进行查找，上限 10 个
+     * @param array  $options
+     *
      * @return array
      */
-    public function multiSearch(string $image, string $imageType, string $groupIdList, array $options = []): array {
-        $data['image'] = $image;
-        $data['image_type'] = $imageType;
-        $data['group_id_list'] = $groupIdList;
+    public function multiSearch(string $image, string $image_type, array $group_id_list, array $options = []): array {
+        $data = [
+            'image' => $image,
+            'image_type' => $image_type,
+            'group_id_list' => implode(',', $group_id_list)
+        ];
 
         $data = array_merge($data, $options);
 
         return $this->request(API_MULTI_SEARCH, $data, true);
     }
 
+    /**
+     * 人脸注册
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/7k37c1twu#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
+     *
+     * @param string $image      图片信息（总数据大小应小于 10M），图片上传方式根据 image_type 来判断。组内每个 uid 下的人脸图片数目上限为 20 张
+     * @param string $image_type 图片类型，值为 BASE64 时大小不超过 2M
+     * @param string $group_id   用户组 id，标识一组用户（由数字、字母、下划线组成），长度限制 48B
+     * @param string $user_id    用户 id（由数字、字母、下划线组成），长度限制 128B
+     * @param array  $options
+     *
+     * @return array
+     */
+    public function faceRegister(string $image,
+                                 string $image_type, string $group_id, string $user_id, array $options = []): array {
+        $data = [
+            'image' => $image,
+            'image_type' => $image_type,
+            'group_id' => $group_id,
+            'user_id' => $user_id
+        ];
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_USER_ADD, $data, true);
+    }
 
     /**
-     * 在线活体检测接口
+     * 人脸更新
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/7k37c1twu#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E-1
+     *
+     * @param string $image      图片信息（总数据大小应小于 10M），图片上传方式根据 image_type 来判断
+     * @param string $image_type 图片类型，值为 BASE64 时大小不超过 2M
+     * @param string $group_id   用户组 id，标识一组用户（由数字、字母、下划线组成），长度限制 128B
+     * @param string $user_id    用户 id（由数字、字母、下划线组成），长度限制 48B
+     * @param array  $options
+     *
+     * @return array
+     */
+    public function faceUpdate(string $image,
+                               string $image_type, string $group_id, string $user_id, array $options = []): array {
+        $data = [
+            'image' => $image,
+            'image_type' => $image_type,
+            'group_id' => $group_id,
+            'user_id' => $user_id
+        ];
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_USER_UPDATE, $data, true);
+    }
+
+    /**
+     * 人脸删除
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/7k37c1twu#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E-2
+     *
+     * @param string $user_id    用户 id（由数字、字母、下划线组成），长度限制 128B
+     * @param string $group_id   用户组 id，标识一组用户（由数字、字母、下划线组成），长度限制 48B
+     * @param string $face_token 需要删除的人脸图片 token，（由数字、字母、下划线组成）长度限制 64B
+     *
+     * @return array
+     */
+    public function faceDelete(string $user_id, string $group_id, string $face_token): array {
+        $data = [
+            'user_id' => $user_id,
+            'group_id' => $group_id,
+            'face_token' => $face_token
+        ];
+
+        return $this->request(API_FACE_DELETE, $data, true);
+    }
+
+    /**
+     * 用户信息查询
+     *
+     * @param string $user_id  用户 id（由数字、字母、下划线组成），长度限制 48B
+     * @param string $group_id 用户组 id（由数字、字母、下划线组成），长度限制 48B
+     *
+     * @return array
+     * @description options列表:
+     */
+    public function getUser(string $user_id, string $group_id): array {
+        $data = [
+            'user_id' => $user_id,
+            'group_id' => $group_id
+        ];
+
+        return $this->request(API_USER_GET, $data, true);
+    }
+
+    /**
+     * 获取用户人脸列表
+     *
+     * @param string $user_id  用户 id（由数字、字母、下划线组成），长度限制 48B
+     * @param string $group_id 用户组 id（由数字、字母、下划线组成），长度限制 48B
+     *
+     * @return array
+     */
+    public function faceGetList(string $user_id, string $group_id): array {
+        $data = [
+            'user_id' => $user_id,
+            'group_id' => $group_id
+        ];
+
+        return $this->request(API_FACE_GET_LIST, $data, true);
+    }
+
+    /**
+     * 获取用户列表接口
+     *
+     * @param string $group_id 用户组 id，长度限制 48B
+     * @param int    $start    默认值 0，起始序号
+     * @param int    $length   返回数量，默认值 100，最大值 1000
+     *
+     * @return array
+     */
+    public function getGroupUserList(string $group_id, int $start = 0, int $length = 100): array {
+        $data = [
+            'group_id' => $group_id,
+            'start' => $start,
+            'length' => $length
+        ];
+
+        return $this->request(API_GROUP_GET_USERS, $data, true);
+    }
+
+    /**
+     * 复制用户接口
+     *
+     * @param string $user_id      用户 id，长度限制 48B
+     * @param string $src_group_id 从指定组里复制信息
+     * @param string $dst_group_id 需要添加用户的组 id
+     *
+     * @return array
+     */
+    public function userCopy(string $user_id, string $src_group_id, string $dst_group_id): array {
+        $data = [
+            'user_id' => $user_id,
+            'src_group_id' => $src_group_id,
+            'dst_group_id' => $dst_group_id
+        ];
+
+        return $this->request(API_USER_COPY, $data, true);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param string $group_id
+     * @param string $user_id
+     *
+     * @return array
+     */
+    public function deleteUser(string $group_id, string $user_id): array {
+        $data = [
+            'group_id' => $group_id,
+            'user_id' => $user_id
+        ];
+
+        return $this->request(API_USER_DELETE, $data, true);
+    }
+
+    /**
+     * 创建用户组
+     *
+     * @param string $group_id 用户组 id，标识一组用户（由数字、字母、下划线组成），长度限制 48B
+     *
+     * @return array
+     */
+    public function groupAdd(string $group_id): array {
+        return $this->request(API_GROUP_ADD, ['group_id' => $group_id], true);
+    }
+
+    /**
+     * 删除用户组接口
+     *
+     * @param string $group_id 用户组 id，标识一组用户（由数字、字母、下划线组成），长度限制 48B
+     *
+     * @return array
+     */
+    public function groupDelete(string $group_id): array {
+        return $this->request(API_GROUP_DELETE, ['group_id' => $group_id], true);
+    }
+
+    /**
+     * 组列表查询接口
+     *
+     * @param int $start  默认值 0，起始序号
+     * @param int $length 返回数量，默认值 100，最大值 1000
+     *
+     * @return array
+     */
+    public function getGroupList(int $start = 0, int $length = 100): array {
+        return $this->request(API_GROUP_GET_LIST, ['start' => $start, 'length' => $length], true);
+    }
+
+    /**
+     * 在线图片活体检测
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/Zk37c1urr#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
      * @param array $images
      *
@@ -122,255 +318,26 @@ class AipFace extends AipBase {
     }
 
     /**
-     * 获取用户人脸列表接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function faceGetList(string $userId, string $groupId, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_FACE_GET_LIST, $data, true);
-    }
-
-    /**
-     * 人脸删除接口
-     *
-     * @param string $userId    - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId   - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param string $faceToken - 需要删除的人脸图片token，（由数字、字母、下划线组成）长度限制64B
-     * @param array  $options   - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function faceDelete(string $userId, string $groupId, string $faceToken, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-        $data['face_token'] = $faceToken;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_FACE_DELETE, $data, true);
-    }
-
-    /**
-     * 用户信息查询接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function getUser(string $userId, string $groupId, array $options = []): array {
-        $data['user_id'] = $userId;
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_USER_GET, $data, true);
-    }
-
-    /**
-     * 人脸注册接口
-     *
-     * @param string $image     - 图片信息(总数据大小应小于10M)，图片上传方式根据image_type来判断。注：组内每个uid下的人脸图片数目上限为20张
-     * @param string $imageType - 图片类型     <br> **BASE64**:图片的base64值，base64编码后的图片数据，编码后的图片大小不超过2M； <br>**URL**:图片的
-     *                          URL地址( 可能由于网络等原因导致下载图片时间过长)； <br>**FACE_TOKEN**:
-     *                          人脸图片的唯一标识，调用人脸检测接口时，会为每个人脸图片赋予一个唯一的FACE_TOKEN，同一张图片多次检测得到的FACE_TOKEN是同一个。
-     * @param string $groupId   - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param string $userId    - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options   - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   user_info 用户资料，长度限制256B
-     *   quality_control 图片质量控制  **NONE**: 不进行控制 **LOW**:较低的质量要求 **NORMAL**: 一般的质量要求 **HIGH**: 较高的质量要求 **默认 NONE**
-     *   liveness_control 活体检测控制  **NONE**: 不进行控制 **LOW**:较低的活体要求(高通过率 低攻击拒绝率) **NORMAL**: 一般的活体要求(平衡的攻击拒绝率, 通过率)
-     *   **HIGH**: 较高的活体要求(高攻击拒绝率 低通过率) **默认NONE** action_type 操作方式  APPEND:
-     *   当user_id在库中已经存在时，对此user_id重复注册时，新注册的图片默认会追加到该user_id下,REPLACE :
-     *   当对此user_id重复注册时,则会用新图替换库中该user_id下所有图片,默认使用APPEND
-     * @return array
-     */
-    public function addUser(string $image,
-                            string $imageType, string $groupId, string $userId, array $options = []): array {
-        $data['image'] = $image;
-        $data['image_type'] = $imageType;
-        $data['group_id'] = $groupId;
-        $data['user_id'] = $userId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_USER_ADD, $data, true);
-    }
-
-    /**
-     * 人脸更新接口
-     *
-     * @param string $image     - 图片信息(**总数据大小应小于10M**)，图片上传方式根据image_type来判断
-     * @param string $imageType - 图片类型     <br> **BASE64**:图片的base64值，base64编码后的图片数据，编码后的图片大小不超过2M； <br>**URL**:图片的
-     *                          URL地址( 可能由于网络等原因导致下载图片时间过长)； <br>**FACE_TOKEN**:
-     *                          人脸图片的唯一标识，调用人脸检测接口时，会为每个人脸图片赋予一个唯一的FACE_TOKEN，同一张图片多次检测得到的FACE_TOKEN是同一个。
-     * @param string $groupId   - 更新指定groupid下uid对应的信息
-     * @param string $userId    - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options   - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   user_info 用户资料，长度限制256B
-     *   quality_control 图片质量控制  **NONE**: 不进行控制 **LOW**:较低的质量要求 **NORMAL**: 一般的质量要求 **HIGH**: 较高的质量要求 **默认 NONE**
-     *   liveness_control 活体检测控制  **NONE**: 不进行控制 **LOW**:较低的活体要求(高通过率 低攻击拒绝率) **NORMAL**: 一般的活体要求(平衡的攻击拒绝率, 通过率)
-     *   **HIGH**: 较高的活体要求(高攻击拒绝率 低通过率) **默认NONE** action_type 操作方式  APPEND:
-     *   当user_id在库中已经存在时，对此user_id重复注册时，新注册的图片默认会追加到该user_id下,REPLACE :
-     *   当对此user_id重复注册时,则会用新图替换库中该user_id下所有图片,默认使用APPEND
-     * @return array
-     */
-    public function updateUser(string $image,
-                               string $imageType, string $groupId, string $userId, array $options = []): array {
-        $data['image'] = $image;
-        $data['image_type'] = $imageType;
-        $data['group_id'] = $groupId;
-        $data['user_id'] = $userId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_USER_UPDATE, $data, true);
-    }
-
-    /**
-     * 删除用户接口
-     *
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function deleteUser(string $groupId, string $userId, array $options = []): array {
-        $data['group_id'] = $groupId;
-        $data['user_id'] = $userId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_USER_DELETE, $data, true);
-    }
-
-    /**
-     * 复制用户接口
-     *
-     * @param string $userId  - 用户id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   src_group_id 从指定组里复制信息
-     *   dst_group_id 需要添加用户的组id
-     * @return array
-     */
-    public function userCopy(string $userId, array $options = []): array {
-        $data['user_id'] = $userId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_USER_COPY, $data, true);
-    }
-
-    /**
-     * 获取用户列表接口
-     *
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   start 默认值0，起始序号
-     *   length 返回数量，默认值100，最大值1000
-     * @return array
-     */
-    public function getGroupUsers(string $groupId, array $options = []): array {
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_GROUP_GET_USERS, $data, true);
-    }
-
-    /**
-     * 创建用户组接口
-     *
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function groupAdd(string $groupId, array $options = []): array {
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-        return $this->request(API_GROUP_ADD, $data, true);
-    }
-
-    /**
-     * 删除用户组接口
-     *
-     * @param string $groupId - 用户组id（由数字、字母、下划线组成），长度限制128B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function groupDelete(string $groupId, array $options = []): array {
-        $data['group_id'] = $groupId;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_GROUP_DELETE, $data, true);
-    }
-
-    /**
-     * 组列表查询接口
-     *
-     * @param array $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   start 默认值0，起始序号
-     *   length 返回数量，默认值100，最大值1000
-     * @return array
-     */
-    public function getGroupList(array $options = []): array {
-        return $this->request(API_GROUP_GET_LIST, $options, true);
-    }
-
-    /**
      * 身份验证接口
      *
-     * @param string $image        - 图片信息(**总数据大小应小于10M**)，图片上传方式根据image_type来判断
-     * @param string $imageType    - 图片类型     <br> **BASE64**:图片的base64值，base64编码后的图片数据，编码后的图片大小不超过2M； <br>**URL**:图片的
-     *                             URL地址( 可能由于网络等原因导致下载图片时间过长)； <br>**FACE_TOKEN**:
-     *                             人脸图片的唯一标识，调用人脸检测接口时，会为每个人脸图片赋予一个唯一的FACE_TOKEN，同一张图片多次检测得到的FACE_TOKEN是同一个。
-     * @param string $idCardNumber - 身份证号（真实身份证号号码）
-     * @param string $name         - utf8，姓名（真实姓名，和身份证号匹配）
-     * @param array  $options      - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/FACE/7k37c1ucj#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
-     * @description options列表:
-     *   quality_control 图片质量控制  **NONE**: 不进行控制 **LOW**:较低的质量要求 **NORMAL**: 一般的质量要求 **HIGH**: 较高的质量要求 **默认 NONE**
-     *   liveness_control 活体检测控制  **NONE**: 不进行控制 **LOW**:较低的活体要求(高通过率 低攻击拒绝率) **NORMAL**: 一般的活体要求(平衡的攻击拒绝率, 通过率)
-     *   **HIGH**: 较高的活体要求(高攻击拒绝率 低通过率) **默认NONE**
+     * @param string $image          图片信息（总数据大小应小于 10M），图片上传方式根据 image_type 来判断
+     * @param string $image_type     图片类型，值为 BASE64 时大小不超过 2M，尺寸不超过 1920*1080
+     * @param string $id_card_number 身份证号码
+     * @param string $name           姓名（注：需要是 UTF-8 编码的中文）与身份证匹配
+     * @param array  $options
+     *
      * @return array
      */
     public function personVerify(string $image,
-                                 string $imageType, string $idCardNumber, string $name, array $options = []): array {
-        $data['image'] = $image;
-        $data['image_type'] = $imageType;
-        $data['id_card_number'] = $idCardNumber;
-        $data['name'] = $name;
+                                 string $image_type, string $id_card_number, string $name, array $options = []): array {
+        $data = [
+            'image' => $image,
+            'image_type' => $image_type,
+            'id_card_number' => $id_card_number,
+            'name' => $name
+        ];
 
         $data = array_merge($data, $options);
 
@@ -378,15 +345,59 @@ class AipFace extends AipBase {
     }
 
     /**
-     * 语音校验码接口接口
+     * @param string $id_card_number
+     * @param string $name
      *
-     * @param array $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   appid 百度云创建应用时的唯一标识ID
      * @return array
      */
-    public function sessionCode(array $options = []): array {
-        return $this->request(API_SESSION_CODE, $options, true);
+    public function personIdMatch(string $id_card_number, string $name): array {
+        $data = [
+            'id_card_number' => $id_card_number,
+            'name' => $name
+        ];
+
+        return $this->request(API_PERSON_ID_MATCH, $data, true);
+    }
+
+    /**
+     * 语音校验码接口接口
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/lk37c1tag#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
+     *
+     * @param int $type 0 为语音验证和唇语验证步骤，1 为视频动作活体，默认 0
+     * @param int $min_code_length
+     * @param int $max_code_length
+     *
+     * @return array
+     */
+    public function sessionCode(int $type = 0, int $min_code_length = 3, int $max_code_length = 3): array {
+        return $this->request(API_SESSION_CODE, [
+            'type' => $type,
+            'min_code_length' => $min_code_length,
+            'max_code_length' => $max_code_length
+        ]);
+    }
+
+    /**
+     * 视频活体检测
+     *
+     * @url https://ai.baidu.com/ai-doc/FACE/lk37c1tag#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E-1
+     *
+     * @param string $video         建议先将视频进行转码，h.264 编码，mp4 封装。建议视频长度控制在 1s-10s 之间，视频大小建议在 2M
+     *                              以内（视频大小强制要求在20M以内，推荐使用等分辨率压缩，压缩分辨率建议不小于 640*480）视频大小分辨率建议限制在 16~2032 之间
+     * @param string $type_identity voice 为语音验证，action 为视频动作活体验证，默认为 voice
+     * @param array  $options
+     *
+     * @return array
+     */
+    public function faceLivenessVerify(string $video, string $type_identity = 'voice', array $options = []): array {
+        $data = [
+            'type_identity' => $type_identity,
+            'video_base64' => base64_encode($video)
+        ];
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_FACE_LIVENESS_VERIFY, $data);
     }
 }

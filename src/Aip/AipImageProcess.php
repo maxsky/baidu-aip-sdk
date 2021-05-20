@@ -23,174 +23,204 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageProcess extends AipBase {
 
     /**
-     * 图像无损放大接口
+     * 黑白图像上色
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
      *
-     * @description options列表:
      * @return array
      */
-    public function imageQualityEnhance(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_QUALITY_ENHANCE, $data);
-    }
-
-    /**
-     * 图像去雾接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function dehaze(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_DEHAZE, $data);
-    }
-
-    /**
-     * 图像对比度增强接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function contrastEnhance(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_CONTRAST_ENHANCE, $data);
-    }
-
-    /**
-     * 黑白图像上色接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function colourize(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function colourize(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
         return $this->request(API_COLOURIZE, $data);
     }
 
     /**
-     * 拉伸图像恢复接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function stretchRestore(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_STRETCH_RESTORE, $data);
-    }
-
-    /**
-     * 人像动漫化
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function selfieAnime(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SELFIE_ANIME, $data);
-    }
-
-    /**
-     * 图像清晰度增强
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function imageDefinitionEnhance(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_DEFINITION_ENHANCE, $data);
-    }
-
-    /**
      * 图像风格转换
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/IMAGEPROCESS/xk3bclo77#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
-     * @description options列表:
+     * @param string $image  图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     * @param string $option 风格
+     *
      * @return array
      */
-    public function __styleTrans(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function styleTrans(string $image, string $option): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['option'] = $option;
 
         return $this->request(API_STYLE_TRANS, $data);
     }
 
     /**
-     * 天空分割
+     * 人像动漫化
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string   $image   图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     * @param string   $type    anime 或者 anime_mask。前者生成二次元动漫图，后者生成戴口罩的二次元动漫人像
+     * @param int|null $mask_id 1~8 之间的整数，用于指定所使用的口罩的编码
      *
-     * @description options列表:
      * @return array
      */
-    public function skySeg(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function selfieAnime(string $image, string $type = 'anime', int $mask_id = null): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['type'] = $type;
+        $data['mask_id'] = $mask_id;
+
+        return $this->request(API_SELFIE_ANIME, $data);
+    }
+
+    /**
+     * 天空分割
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function skySeg(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
         return $this->request(API_SKY_SEG, $data);
     }
 
     /**
-     * 图像修复
+     * 图像去雾
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param        $rectangle
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
      *
      * @return array
-     * @description options列表:
      */
-    public function inpaintingByMask(string $image, $rectangle, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function dehaze(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_DEHAZE, $data);
+    }
+
+    /**
+     * 图像对比度增强
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function contrastEnhance(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_CONTRAST_ENHANCE, $data);
+    }
+
+    /**
+     * 图像无损放大
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function qualityEnhance(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_QUALITY_ENHANCE, $data);
+    }
+
+    /**
+     * 拉伸图像恢复
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function stretchRestore(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_STRETCH_RESTORE, $data);
+    }
+
+    /**
+     * 图像修复
+     *
+     * @url https://ai.baidu.com/ai-doc/IMAGEPROCESS/ok3bclome#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
+     *
+     * @param string $image     图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     * @param array  $rectangle 要去除的位置为规则矩形时，给出坐标信息
+     *
+     * @return array
+     */
+    public function inpaintingByMask(string $image, array $rectangle): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
         $data['rectangle'] = $rectangle;
 
-        $data = array_merge($data, $options);
-
         return $this->request(API_INPAINTING, $data);
+    }
+
+    /**
+     * 图像清晰度增强
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function definitionEnhance(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_DEFINITION_ENHANCE, $data);
+    }
+
+    /**
+     * 图像色彩增强
+     *
+     * @param string $image 图像数据或 URL，大小不超过 10M（参考：原图大约为 8M 以内），最短边至少 10px，最长边最大 5000px，长宽比 4:1 以内
+     *
+     * @return array
+     */
+    public function colorEnhance(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_COLOR_ENHANCE, $data);
     }
 }

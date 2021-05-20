@@ -23,185 +23,88 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageClassify extends AipBase {
 
     /**
-     * 通用物体识别接口
+     * 组合接口
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/IMAGERECOGNITION/Kkbg3gxs7#%E6%8E%A5%E5%8F%A3%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E
      *
-     * @description options列表:
-     *   baike_num 返回百科信息的结果数，默认不返回
+     * @param string $image  图像数据或 URL
+     * @param array  $scenes 模型服务
+     * @param array  $options
+     *
      * @return array
+     * @description options列表:
      */
-    public function advancedGeneral(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function combination(string $image, array $scenes, array $options = []): array {
+        if (isUrl($image)) {
+            $data['imgUrl'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        $data['scenes'] = $scenes;
 
         $data = array_merge($data, $options);
+
+        return $this->request(API_COMBINATION, $data, true);
+    }
+
+    /**
+     * 通用物体和场景识别高级版
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $baike_num
+     *
+     * @return array
+     * @description options列表:
+     *   baike_num 返回百科信息的结果数，默认不返回
+     */
+    public function advancedGeneral(string $image, int $baike_num = 0): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        $data['baike_num'] = $baike_num;
 
         return $this->request(API_ADVANCED_GENERAL, $data);
     }
 
     /**
-     * 菜品识别接口
+     * 图像单主体检测
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image     图像数据，大小不超过4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $with_face 如果检测主体是人，主体区域是否带上人脸部分，0-不带人脸区域，裁剪类需求推荐带人脸，检索/识别类需求推荐不带人脸。默认 1 带人脸。
      *
-     * @description options列表:
-     *   top_num 返回预测得分top结果数，默认为5
-     *   filter_threshold 默认0.95，可以通过该参数调节识别效果，降低非菜识别率.
-     *   baike_num 返回百科信息的结果数，默认不返回
      * @return array
      */
-    public function dishDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function objectDetect(string $image, int $with_face = 1): array {
+        $data = [
+            'image' => $image,
+            'with_face' => $with_face
+        ];
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_DISH_DETECT, $data);
-    }
-
-    /**
-     * 车辆识别接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   top_num 返回预测得分top结果数，默认为5
-     *   baike_num 返回百科信息的结果数，默认不返回
-     * @return array
-     */
-    public function carDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_CAR_DETECT, $data);
-    }
-
-    /**
-     * 车辆检测接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   show 是否返回结果图（含统计值和跟踪框）。选true时返回渲染后的图片(base64)，其它无效值或为空则默认false。
-     *   area
-     *   只统计该区域内的车辆数，缺省时为全图统计。<br>逗号分隔，如‘x1,y1,x2,y2,x3,y3...xn,yn'，按顺序依次给出每个顶点的x、y坐标（默认尾点和首点相连），形成闭合多边形区域。<br>服务会做范围（顶点左边需在图像范围内）及个数校验（数组长度必须为偶数，且大于3个顶点）。只支持单个多边形区域，建议设置矩形框，即4个顶点。**坐标取值不能超过图像宽度和高度，比如1280的宽度，坐标值最大到1279**。
-     * @return array
-     */
-    public function vehicleDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_VEHICLE_DETECT, $data);
-    }
-
-    /**
-     * 车辆外观损伤识别接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function vehicleDamage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_VEHICLE_DAMAGE, $data);
-    }
-
-    /**
-     * logo商标识别接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   custom_lib 是否只使用自定义logo库的结果，默认false：返回自定义库+默认库的识别结果
-     * @return array
-     */
-    public function logoDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_LOGO_DETECT, $data);
-    }
-
-    /**
-     * logo商标识别—添加接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief   - brief，检索时带回。此处要传对应的name与code字段，name长度小于100B，code长度小于150B
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function logoAdd(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_LOGO_ADD, $data);
-    }
-
-    /**
-     * logo 商标识别—删除接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function logoDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_LOGO_DELETE, $data);
-    }
-
-    /**
-     * logo商标识别—删除接口
-     *
-     * @param string $contSign - 图片签名（和image二选一，image优先级更高）
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function logoDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_LOGO_DELETE, $data);
+        return $this->request(API_OBJECT_DETECT, $data);
     }
 
     /**
      * 动物识别接口
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image     图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $top_num   返回预测得分 top 结果数，默认为 6
+     * @param int    $baike_num 返回百科信息的结果数，默认不返回
      *
-     * @description options列表:
-     *   top_num 返回预测得分top结果数，默认为6
-     *   baike_num 返回百科信息的结果数，默认不返回
      * @return array
      */
-    public function animalDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function animalDetect(string $image, int $top_num = 6, int $baike_num = 0): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['top_num'] = $top_num;
+        $data['baike_num'] = $baike_num;
 
         return $this->request(API_ANIMAL_DETECT, $data);
     }
@@ -209,249 +112,404 @@ class AipImageClassify extends AipBase {
     /**
      * 植物识别接口
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image     图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $baike_num 返回百科信息的结果数，默认不返回
      *
-     * @description options列表:
-     *   baike_num 返回百科信息的结果数，默认不返回
      * @return array
      */
-    public function plantDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function plantDetect(string $image, int $baike_num = 0): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['baike_num'] = $baike_num;
 
         return $this->request(API_PLANT_DETECT, $data);
     }
 
     /**
-     * 图像主体检测接口
+     * Logo 识别 - 检索
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image      图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param bool   $custom_lib 是否只检索用户子库，true 则只检索用户子库，false（默认）为检索底库+用户子库
      *
-     * @description options列表:
-     *   with_face 如果检测主体是人，主体区域是否带上人脸部分，0-不带人脸区域，其他-带人脸区域，裁剪类需求推荐带人脸，检索/识别类需求推荐不带人脸。默认取1，带人脸。
      * @return array
      */
-    public function objectDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function logoDetect(string $image, bool $custom_lib = false): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['custom_lib'] = $custom_lib ? 'true' : 'false';
 
-        return $this->request(API_OBJECT_DETECT, $data);
+        return $this->request(API_LOGO_DETECT, $data);
     }
 
     /**
-     * 地标识别接口
+     * Logo 识别 — 入库
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string $name  对应的品牌名称
      *
-     * @description options列表:
      * @return array
      */
-    public function landmark(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function logoAdd(string $image, string $name): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['brief'] = json_encode(['name' => $name]);
 
-        return $this->request(API_LANDMARK_DETECT, $data);
+        return $this->request(API_LOGO_ADD, $data);
     }
 
     /**
-     * 花卉识别接口
+     * Logo 识别 - 删除
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
      *
-     * @description options列表:
-     *   top_num 返回预测得分top结果数，默认为5
-     *   baike_num 返回百科信息的结果数，默认不返回
      * @return array
      */
-    public function flower(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function logoDelete(string $image = null, string $cont_sign = null): array {
+        if (!$image && !$cont_sign) {
+            return [
+                'error_code' => 216101,
+                'error_msg' => ERROR_MSG[216101]
+            ];
+        }
 
-        $data = array_merge($data, $options);
+        $data = [
+            'image' => base64_encode($image),
+            'cont_sign' => $cont_sign
+        ];
 
-        return $this->request(API_FLOWER_DETECT, $data);
+        return $this->request(API_LOGO_DELETE, $data);
     }
 
     /**
-     * 食材识别接口
+     * 食材识别
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image   图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $top_num 返回预测得分 top 结果数，如果为空或小于等于 0 默认为 5；如果大于 20 默认 20
      *
-     * @description options列表:
-     *   top_num 返回预测得分top结果数，如果为空或小于等于0默认为5；如果大于20默认20
      * @return array
      */
-    public function ingredient(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function ingredient(string $image, int $top_num = 5): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data ['top_num'] = $top_num;
 
         return $this->request(API_INGREDIENT_DETECT, $data);
     }
 
-    /**
-     * 红酒识别接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function redWine(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_RED_WINE_DETECT, $data);
-    }
 
     /**
-     * 货币识别接口
+     * 自定义菜品识别 — 入库
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function currency(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_CURRENCY_DETECT, $data);
-    }
-
-    /**
-     * 自定义菜品识别—入库
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string   $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string[] $brief 菜品名称摘要信息，检索时带回，不超过 256B
      *
      * @return array
-     * @description options列表:
      */
-    public function customDishesAddImage(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
+    public function customDishAdd(string $image, array $brief): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['brief'] = json_encode($brief);
 
         return $this->request(API_DISH_ADD, $data);
     }
 
     /**
-     * 自定义菜品识别—检索
+     * 自定义菜品识别 — 检索
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
      *
-     * @description options列表:
      * @return array
      */
-    public function customDishesSearch(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function customDishSearch(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
         return $this->request(API_DISH_SEARCH, $data);
     }
 
     /**
-     * 自定义菜品识别—删除
+     * 自定义菜品识别 — 删除
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
      *
-     * @description options列表:
      * @return array
      */
-    public function customDishesDeleteImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function customDishDelete(string $image = null, string $cont_sign = null): array {
+        if (!$image && !$cont_sign) {
+            return [
+                'error_code' => 216101,
+                'error_msg' => ERROR_MSG[216101]
+            ];
+        }
 
-        $data = array_merge($data, $options);
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        $data['cont_sign'] = $cont_sign;
 
         return $this->request(API_DISH_DELETE, $data);
     }
 
     /**
-     * 自定义菜品识别—删除
+     * 菜品识别
      *
-     * @param string $contSign
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image            图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param float  $filter_threshold 可以通过该参数调节识别效果，降低非菜识别率
+     * @param int    $top_num          返回结果 top n，默认 5
+     * @param int    $baike_num        返回百科信息的结果数，默认不返回
      *
-     * @description options列表:
      * @return array
      */
-    public function customDishesDeleteContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
+    public function dishDetect(string $image, float $filter_threshold = 0.95, int $top_num = 5, int $baike_num = 0): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
-        $data = array_merge($data, $options);
+        $data['filter_threshold'] = $filter_threshold;
+        $data['top_num'] = $top_num;
+        $data['baike_num'] = $baike_num;
 
-        return $this->request(API_DISH_DELETE, $data);
+        return $this->request(API_DISH_DETECT, $data);
+    }
+
+    /**
+     * 红酒识别
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     *
+     * @return array
+     */
+    public function redWine(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_RED_WINE_DETECT, $data);
+    }
+
+    /**
+     * 货币识别
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     *
+     * @return array
+     */
+    public function currency(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_CURRENCY_DETECT, $data);
+    }
+
+    /**
+     * 地标识别
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     *
+     * @return array
+     */
+    public function landmark(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_LANDMARK_DETECT, $data);
+    }
+
+    /**
+     * 花卉识别
+     *
+     * @param string $image     图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $top_num   返回预测得分 top 结果数，默认为 5
+     * @param int    $baike_num 返回百科信息的结果数，默认不返回
+     *
+     * @return array
+     */
+    public function flower(string $image, int $top_num = 5, int $baike_num = 0): array {
+        $data = [
+            'image' => base64_encode($image),
+            'top_num' => $top_num,
+            'baike_num' => $baike_num
+        ];
+
+        return $this->request(API_FLOWER_DETECT, $data);
+    }
+
+    /**
+     * 车辆识别
+     *
+     * @param string $image     图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param int    $top_num   返回预测得分 top 结果数，默认为 5
+     * @param int    $baike_num 返回百科信息的结果数，默认不返回
+     *
+     * @return array
+     */
+    public function carDetect(string $image, int $top_num = 5, int $baike_num = 0): array {
+        $data = [
+            'image' => base64_encode($image),
+            'top_num' => $top_num,
+            'baike_num' => $baike_num
+        ];
+
+        return $this->request(API_CAR_DETECT, $data);
+    }
+
+    /**
+     * 车辆检测
+     *
+     * @url https://cloud.baidu.com/doc/IMAGERECOGNITION/s/fk3bcxi5z#%E8%BD%A6%E8%BE%86%E6%A3%80%E6%B5%8B
+     *
+     * @param string $image 图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $area  只统计该区域内的车辆数，缺省时为全图统计
+     *
+     * @return array
+     */
+    public function vehicleDetect(string $image, array $area = []): array {
+        $data = [
+            'image' => base64_encode($image),
+            'area' => implode(',', $area)
+        ];
+
+        return $this->request(API_VEHICLE_DETECT, $data);
+    }
+
+    /**
+     * 车辆外观损伤识别
+     *
+     * @param string $image 图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     *
+     * @return array
+     */
+    public function vehicleDamage(string $image): array {
+        return $this->request(API_VEHICLE_DAMAGE, ['image' => base64_encode($image)]);
+    }
+
+    /**
+     * 门脸识别
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     *
+     * @return array
+     */
+    public function facadeDetect(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        return $this->request(API_FACADE_DETECT, $data);
+    }
+
+    /**
+     * @param string $image      图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param float  $threshold  默认 0.9，可自定义阈值，支持精确到小数点后两位
+     * @param int    $custom_lib 0 为只检索公库；1 为只检索自建库；2 为检索公库+自建库。其余数字为默认只检索公库
+     *
+     * @return array
+     */
+    public function facadeSearch(string $image, float $threshold = 0.9, int $custom_lib = 0): array {
+        $data = [
+            'image' => base64_encode($image),
+            'threshold' => $threshold,
+            'custom_lib' => $custom_lib
+        ];
+
+        return $this->request(API_FACADE_SEARCH, $data);
+    }
+
+    /**
+     * 门脸识别 - 入库
+     *
+     * @param string $image 图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $brief 最长支持 512B，识别时接口返回，可以填入门脸名称、图片名称、门脸地理位置等信息
+     *
+     * @return array
+     */
+    public function facadeAdd(string $image, array $brief): array {
+        $data = [
+            'image' => base64_encode($image),
+            'brief' => json_encode($brief)
+        ];
+
+        return $this->request(API_FACADE_ADD, $data);
+    }
+
+    /**
+     * 门脸识别 - 删除
+     *
+     * @param string|null $image     图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 门脸库内图片的签名
+     *
+     * @return array
+     */
+    public function facadeDelete(string $image = null, string $cont_sign = null): array {
+        if (!$image && !$cont_sign) {
+            return [
+                'error_code' => 216101,
+                'error_msg' => ERROR_MSG[216101]
+            ];
+        }
+
+        $data = [
+            'image' => base64_encode($image),
+            'cont_sign' => $cont_sign
+        ];
+
+        return $this->request(API_FACADE_DELETE, $data);
     }
 
     /**
      * 图像多主体检测
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
      *
-     * @description options列表:
      * @return array
      */
-    public function multiObjectDetect(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function multiObjectDetect(string $image): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
 
         return $this->request(API_MULTI_OBJECT_DETECT, $data);
-    }
-
-    /**
-     * 组合接口-image
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $scenes
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @return array
-     * @description options列表:
-     */
-    public function combinationByImage(string $image, array $scenes, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['scenes'] = $scenes;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_COMBINATION, $data, true);
-    }
-
-    /**
-     * 组合接口-imageUrl
-     *
-     * @param string $imageUrl - 图像数据url
-     * @param array  $scenes
-     * @param array  $options  - 可选参数对象，key: value 都为 string 类型
-     *
-     * @return array
-     * @description options列表:
-     */
-    public function combinationByImageUrl(string $imageUrl, array $scenes, array $options = []): array {
-        $data['imgUrl'] = $imageUrl;
-        $data['scenes'] = $scenes;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_COMBINATION, $data, true);
     }
 }

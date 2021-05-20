@@ -23,6 +23,146 @@ use Baidu\Aip\Lib\AipBase;
 class AipImageSearch extends AipBase {
 
     /**
+     * 相似图片 — 入库
+     *
+     * @param string      $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式。重复添加完全相同的图片会返回错误，提示不能重复入库
+     * @param array       $brief 检索时原样带回，最长256B
+     * @param string|null $tags  tag 间以逗号分隔，最多 2 个 tag，2 个 tag 无层级关系，检索时支持逻辑运算。样例："100,11" ；检索时可圈定分类维度进行检索
+     *
+     * @return array
+     */
+    public function similarAdd(string $image, array $brief, string $tags = null): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        $data['brief'] = json_encode($brief);
+
+        if ($tags) {
+            $data['tags'] = $tags;
+        }
+
+        return $this->request(API_SIMILAR_ADD, $data);
+    }
+
+    /**
+     * 相似图片 — 检索
+     *
+     * @url https://ai.baidu.com/ai-doc/IMAGESEARCH/3k3bczqz8#%E7%9B%B8%E4%BC%BC%E5%9B%BE%E7%89%87%E6%90%9C%E7%B4%A2%E6%A3%80%E7%B4%A2
+     *
+     * @param string $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $options
+     *
+     * @return array
+     */
+    public function similarSearch(string $image, array $options = []): array {
+        if (isUrl($image)) {
+            $data['url'] = $image;
+        } else {
+            $data['image'] = base64_encode($image);
+        }
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_SIMILAR_SEARCH, $data);
+    }
+
+    /**
+     * 相似图片 — 更新
+     *
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
+     *
+     * @return array
+     */
+    public function similarUpdate(string $image = null, string $cont_sign = null): array {
+        if ($image) {
+            if (isUrl($image)) {
+                $data['url'] = $image;
+            } else {
+                $data['image'] = base64_encode($image);
+            }
+        }
+
+        $data['cont_sign'] = $cont_sign;
+
+        return $this->request(API_SIMILAR_UPDATE, $data);
+    }
+
+    /**
+     * 相似图检索—更新接口
+     *
+     * @param string $contSign - 图片签名
+     * @param array  $options  - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
+     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
+     * @return array
+     */
+    public function similarUpdateContSign(string $contSign, array $options = []): array {
+        $data['cont_sign'] = $contSign;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_SIMILAR_UPDATE, $data);
+    }
+
+    /**
+     * 相似图检索—删除接口
+     *
+     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function similarDeleteByImage(string $image, array $options = []): array {
+        $data['image'] = base64_encode($image);
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_SIMILAR_DELETE, $data);
+    }
+
+    /**
+     * 相似图检索—删除接口
+     *
+     * @param string $url     -
+     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
+     * @param array  $options - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function similarDeleteByUrl(string $url, array $options = []): array {
+        $data['url'] = $url;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_SIMILAR_DELETE, $data);
+    }
+
+    /**
+     * 相似图检索—删除接口
+     *
+     * @param string $contSign - 图片签名
+     * @param array  $options  - 可选参数对象，key: value都为string类型
+     *
+     * @description options列表:
+     * @return array
+     */
+    public function similarDeleteBySign(string $contSign, array $options = []): array {
+        $data['cont_sign'] = $contSign;
+
+        $data = array_merge($data, $options);
+
+        return $this->request(API_SIMILAR_DELETE, $data);
+    }
+
+    /**
      * 相同图检索—入库接口
      *
      * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
@@ -214,200 +354,6 @@ class AipImageSearch extends AipBase {
         $data = array_merge($data, $options);
 
         return $this->request(API_SAME_HQ_DELETE, $data);
-    }
-
-    /**
-     * 相似图检索—入库接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief   - 检索时原样带回,最长256B。
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function similarAdd(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_ADD, $data);
-    }
-
-    /**
-     * 相似图检索—入库接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param string $brief   - 检索时原样带回,最长256B。
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function similarAddUrl(string $url, string $brief, array $options = []): array {
-        $data['url'] = $url;
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_ADD, $data);
-    }
-
-    /**
-     * 相似图检索—检索接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     *   tag_logic 检索时tag之间的逻辑， 0：逻辑and，1：逻辑or
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
-     * @return array
-     */
-    public function similarSearch(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_SEARCH, $data);
-    }
-
-    /**
-     * 相似图检索—检索接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     *   tag_logic 检索时tag之间的逻辑， 0：逻辑and，1：逻辑or
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
-     * @return array
-     */
-    public function similarSearchUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_SEARCH, $data);
-    }
-
-    /**
-     * 相似图检索—更新接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function similarUpdate(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_UPDATE, $data);
-    }
-
-    /**
-     * 相似图检索—更新接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function similarUpdateUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_UPDATE, $data);
-    }
-
-    /**
-     * 相似图检索—更新接口
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function similarUpdateContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_UPDATE, $data);
-    }
-
-    /**
-     * 相似图检索—删除接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function similarDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
-    }
-
-    /**
-     * 相似图检索—删除接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function similarDeleteByUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
-    }
-
-    /**
-     * 相似图检索—删除接口
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function similarDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
     }
 
     /**

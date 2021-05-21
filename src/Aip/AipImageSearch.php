@@ -19,8 +19,12 @@
 namespace Baidu\Aip;
 
 use Baidu\Aip\Lib\AipBase;
+use Baidu\Aip\Lib\Traits\DataTrait;
+use Exception;
 
 class AipImageSearch extends AipBase {
+
+    use DataTrait;
 
     /**
      * 相似图片 — 入库
@@ -31,18 +35,8 @@ class AipImageSearch extends AipBase {
      *
      * @return array
      */
-    public function similarAdd(string $image, array $brief, string $tags = null): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        $data['brief'] = json_encode($brief);
-
-        if ($tags) {
-            $data['tags'] = $tags;
-        }
+    public function similarAdd(string $image, array $brief = [], ?string $tags = null): array {
+        $data = $this->genDataWithBriefAndTags($image, $brief, $tags);
 
         return $this->request(API_SIMILAR_ADD, $data);
     }
@@ -58,15 +52,31 @@ class AipImageSearch extends AipBase {
      * @return array
      */
     public function similarSearch(string $image, array $options = []): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        $data = array_merge($data, $options);
+        $data = array_merge($this->genDataWithDoubleImageType($image), $options);
 
         return $this->request(API_SIMILAR_SEARCH, $data);
+    }
+
+
+    /**
+     * 相似图片 — 删除
+     *
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array       $cont_sign 图片签名，最多支持 50 个
+     *
+     * @return array
+     */
+    public function similarDelete(string $image = null, array $cont_sign = []): array {
+        try {
+            $data = $this->genDataWithTripleCondMulti($image, $cont_sign);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
+
+        return $this->request(API_SIMILAR_DELETE, $data);
     }
 
     /**
@@ -74,665 +84,276 @@ class AipImageSearch extends AipBase {
      *
      * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
      * @param string|null $cont_sign 图片签名
+     * @param array       $brief
+     * @param string|null $tags
      *
      * @return array
      */
-    public function similarUpdate(string $image = null, string $cont_sign = null): array {
-        if ($image) {
-            if (isUrl($image)) {
-                $data['url'] = $image;
-            } else {
-                $data['image'] = base64_encode($image);
-            }
+    public function similarUpdate(?string $image = null,
+                                  ?string $cont_sign = null, array $brief = [], ?string $tags = null): array {
+        try {
+            $data = $this->genDataWithTripleCondAndBriefTags($image, $cont_sign, $brief, $tags);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
         }
 
-        $data['cont_sign'] = $cont_sign;
-
         return $this->request(API_SIMILAR_UPDATE, $data);
     }
 
     /**
-     * 相似图检索—更新接口
+     * 相同图片 — 入库
      *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/IMAGESEARCH/Ck3bczreq#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
+     * @param string      $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array       $brief 检索时原样带回，最长 256B
+     * @param string|null $tags  tag 间以逗号分隔，最多两个 tag
+     *
      * @return array
      */
-    public function similarUpdateContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
+    public function sameAdd(string $image, array $brief, string $tags = null): array {
+        $data = $this->genDataWithBriefAndTags($image, $brief, $tags);
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_UPDATE, $data);
+        return $this->request(API_SAME_ADD, $data);
     }
 
     /**
-     * 相似图检索—删除接口
+     * 相同图片 — 检索
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/IMAGESEARCH/Ck3bczreq#%E7%9B%B8%E5%90%8C%E5%9B%BE%E7%89%87%E6%90%9C%E7%B4%A2%E6%A3%80%E7%B4%A2
      *
-     * @description options列表:
+     * @param string $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $options
+     *
      * @return array
      */
-    public function similarDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
+    public function sameSearch(string $image, array $options = []): array {
+        $data = array_merge($this->genDataWithDoubleImageType($image), $options);
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
+        return $this->request(API_SAME_SEARCH, $data);
     }
 
     /**
-     * 相似图检索—删除接口
+     * 相同图片 — 删除
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $cont_sign 图片签名，最多支持 50 个
      *
-     * @description options列表:
      * @return array
      */
-    public function similarDeleteByUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
+    public function sameDelete(string $image, array $cont_sign = []): array {
+        try {
+            $data = $this->genDataWithTripleCondMulti($image, $cont_sign);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
+        return $this->request(API_SAME_DELETE, $data);
     }
 
     /**
-     * 相似图检索—删除接口
+     * 相同图片 — 更新
      *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
+     * @param array       $brief     更新的摘要信息，最长 256B
+     * @param string|null $tags      更新的分类信息，tag 间以逗号分隔，最多 2 个 tag。样例："100,11"
      *
-     * @description options列表:
      * @return array
      */
-    public function similarDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
+    public function sameUpdate(?string $image = null,
+                               ?string $cont_sign = null, array $brief = [], ?string $tags = null): array {
+        try {
+            $data = $this->genDataWithTripleCondAndBriefTags($image, $cont_sign, $brief, $tags);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SIMILAR_DELETE, $data);
+        return $this->request(API_SAME_UPDATE, $data);
     }
 
-    /**
-     * 相同图检索—入库接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief   - 检索时原样带回,最长256B。
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function sameHqAdd(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_ADD, $data);
-    }
 
     /**
-     * 相同图检索—入库接口
+     * 商品图片 — 入库
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param string $brief   - 检索时原样带回,最长256B。
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string   $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array    $brief     检索时原样带回，最长 256B
+     * @param int|null $class_id1 商品分类维度 1
+     * @param int|null $class_id2 商品分类维度 2
      *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
      * @return array
      */
-    public function sameHqAddUrl(string $url, string $brief, array $options = []): array {
-        $data['url'] = $url;
-        $data['brief'] = $brief;
+    public function productAdd(string $image, array $brief, ?int $class_id1 = null, ?int $class_id2 = null): array {
+        $data = $this->genDataWithDoubleImageType($image);
 
-        $data = array_merge($data, $options);
+        $data['brief'] = json_encode($brief);
 
-        return $this->request(API_SAME_HQ_ADD, $data);
-    }
+        if ($class_id1) {
+            $data['class_id1'] = $class_id1;
+        }
 
-    /**
-     * 相同图检索—检索接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     *   tag_logic 检索时tag之间的逻辑， 0：逻辑and，1：逻辑or
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
-     * @return array
-     */
-    public function sameHqSearch(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_SEARCH, $data);
-    }
-
-    /**
-     * 相同图检索—检索接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     *   tag_logic 检索时tag之间的逻辑， 0：逻辑and，1：逻辑or
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
-     * @return array
-     */
-    public function sameHqSearchUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_SEARCH, $data);
-    }
-
-    /**
-     * 相同图检索—更新接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function sameHqUpdate(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_UPDATE, $data);
-    }
-
-    /**
-     * 相同图检索—更新接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function sameHqUpdateUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_UPDATE, $data);
-    }
-
-    /**
-     * 相同图检索—更新接口
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   tags 1 - 65535范围内的整数，tag间以逗号分隔，最多2个tag。样例："100,11" ；检索时可圈定分类维度进行检索
-     * @return array
-     */
-    public function sameHqUpdateContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_UPDATE, $data);
-    }
-
-    /**
-     * 相同图检索—删除接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function sameHqDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_DELETE, $data);
-    }
-
-    /**
-     * 相同图检索—删除接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function sameHqDeleteByUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_DELETE, $data);
-    }
-
-    /**
-     * 相同图检索—删除接口
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function sameHqDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_SAME_HQ_DELETE, $data);
-    }
-
-    /**
-     * 商品检索—入库接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief   -
-     *                        检索时原样带回,最长256B。**请注意，检索接口不返回原图，仅反馈当前填写的brief信息，所以调用该入库接口时，brief信息请尽量填写可关联至本地图库的图片id或者图片url、图片名称等信息**
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   class_id1 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   class_id2 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     * @return array
-     */
-    public function productAdd(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
+        if ($class_id2) {
+            $data['class_id2'] = $class_id2;
+        }
 
         return $this->request(API_PRODUCT_ADD, $data);
     }
 
-    /**
-     * 商品检索—入库接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param string $brief   -
-     *                        检索时原样带回,最长256B。**请注意，检索接口不返回原图，仅反馈当前填写的brief信息，所以调用该入库接口时，brief信息请尽量填写可关联至本地图库的图片id或者图片url、图片名称等信息**
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   class_id1 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   class_id2 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     * @return array
-     */
-    public function productAddUrl(string $url, string $brief, array $options = []): array {
-        $data['url'] = $url;
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_ADD, $data);
-    }
 
     /**
-     * 商品检索—检索接口
+     * 商品图片 — 检索
      *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $options
      *
-     * @description options列表:
-     *   class_id1 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   class_id2 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
      * @return array
      */
     public function productSearch(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+        $data = array_merge($this->genDataWithDoubleImageType($image), $options);
 
         return $this->request(API_PRODUCT_SEARCH, $data);
     }
 
     /**
-     * 商品检索—检索接口
+     * 商品图片 — 删除
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array       $cont_sign 图片签名，最多支持 50 个
      *
-     * @description options列表:
-     *   class_id1 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   class_id2 商品分类维度1，支持1-65535范围内的整数。检索时可圈定该分类维度进行检索
-     *   pn 分页功能，起始位置，例：0。未指定分页时，默认返回前300个结果；接口返回数量最大限制1000条，例如：起始位置为900，截取条数500条，接口也只返回第900 - 1000条的结果，共计100条
-     *   rn 分页功能，截取条数，例：250
      * @return array
      */
-    public function productSearchUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_SEARCH, $data);
-    }
-
-    /**
-     * 商品检索—更新接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   class_id1 更新的商品分类1，支持1-65535范围内的整数。
-     *   class_id2 更新的商品分类2，支持1-65535范围内的整数。
-     * @return array
-     */
-    public function productUpdate(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_UPDATE, $data);
-    }
-
-    /**
-     * 商品检索—更新接口
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   class_id1 更新的商品分类1，支持1-65535范围内的整数。
-     *   class_id2 更新的商品分类2，支持1-65535范围内的整数。
-     * @return array
-     */
-    public function productUpdateUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_UPDATE, $data);
-    }
-
-    /**
-     * 商品检索—更新接口
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     *   brief 更新的摘要信息，最长256B。样例：{"name":"周杰伦", "id":"666"}
-     *   class_id1 更新的商品分类1，支持1-65535范围内的整数。
-     *   class_id2 更新的商品分类2，支持1-65535范围内的整数。
-     * @return array
-     */
-    public function productUpdateContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_UPDATE, $data);
-    }
-
-    /**
-     * 商品检索—删除接口
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function productDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function productDelete(string $image = null, array $cont_sign = []): array {
+        try {
+            $data = $this->genDataWithTripleCondMulti($image, $cont_sign);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
         return $this->request(API_PRODUCT_DELETE, $data);
     }
 
     /**
-     * 商品检索—删除接口
+     * 商品图片 — 更新
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
+     * @param array       $brief     更新的摘要信息，最长 256B
+     * @param int|null    $class_id1 更新的商品分类 1
+     * @param int|null    $class_id2 更新的商品分类 2
      *
-     * @description options列表:
      * @return array
      */
-    public function productDeleteByUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
+    public function productUpdate(?string $image = null, ?string $cont_sign = null,
+                                  array $brief = [], ?int $class_id1 = null, ?int $class_id2 = null): array {
+        try {
+            $data = $this->genDataWithTripleCond($image, $cont_sign);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
-        $data = array_merge($data, $options);
+        if ($brief) {
+            $data['brief'] = $brief;
+        }
 
-        return $this->request(API_PRODUCT_DELETE, $data);
+        if ($class_id1) {
+            $data['class_id1'] = $class_id1;
+        }
+
+        if ($class_id2) {
+            $data['class_id2'] = $class_id2;
+        }
+
+        return $this->request(API_PRODUCT_UPDATE, $data);
     }
 
     /**
-     * 商品检索—删除接口
+     * 绘本图片 — 入库
      *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
+     * @param string      $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array       $brief 检索时原样带回，最长 256B
+     * @param string|null $tags  tag 间以逗号分隔，最多 2 个 tag，2 个 tag 无层级关系，检索时支持逻辑运算。样例："100,11" ；检索时可圈定分类维度进行检索
      *
-     * @description options列表:
      * @return array
      */
-    public function productDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PRODUCT_DELETE, $data);
-    }
-
-    /**
-     * 绘本图片搜索—入库-image
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param string $brief   - 简介
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookAddImage(string $image, string $brief, array $options = []): array {
-        $data['image'] = base64_encode($image);
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
+    public function pictureBookAdd(string $image, array $brief, ?string $tags = null): array {
+        $data = $this->genDataWithBriefAndTags($image, $brief, $tags);
 
         return $this->request(API_PICTURE_BOOK_ADD, $data);
     }
 
     /**
-     * 绘本图片搜索—入库-url
+     * 绘本图片 — 检索
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param string $brief   - 简介
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @url https://ai.baidu.com/ai-doc/IMAGESEARCH/uk7emw71x#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E-1
      *
-     * @description options列表:
+     * @param string $image 图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array  $options
+     *
      * @return array
      */
-    public function pictureBookAddUrl(string $url, string $brief, array $options = []): array {
-        $data['url'] = $url;
-        $data['brief'] = $brief;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_ADD, $data);
-    }
-
-    /**
-     * 绘本图片搜索—检索-image
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookSearchImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function pictureBookSearch(string $image, array $options = []): array {
+        $data = array_merge($this->genDataWithDoubleImageType($image), $options);
 
         return $this->request(API_PICTURE_BOOK_SEARCH, $data);
     }
 
     /**
-     * 绘本图片搜索—检索-url
+     * 绘本图片 — 删除
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param array       $cont_sign 图片签名，最多支持 50 个
      *
-     * @description options列表:
      * @return array
      */
-    public function pictureBookSearchUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_SEARCH, $data);
-    }
-
-    /**
-     * 绘本图片搜索—更新-image
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookUpdate(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
-    }
-
-    /**
-     * 绘本图片搜索—更新-url
-     *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookUpdateUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
-    }
-
-    /**
-     * 绘本图片搜索—更新-cont_sign
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookUpdateContSign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
-    }
-
-    /**
-     * 绘本图片搜索—删除-image
-     *
-     * @param string $image   - 图像数据，base64编码，要求base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式
-     * @param array  $options - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookDeleteByImage(string $image, array $options = []): array {
-        $data['image'] = base64_encode($image);
-
-        $data = array_merge($data, $options);
+    public function pictureBookDelete(?string $image = null, array $cont_sign = []): array {
+        try {
+            $data = $this->genDataWithTripleCondMulti($image, $cont_sign);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
         return $this->request(API_PICTURE_BOOK_DELETE, $data);
     }
 
     /**
-     * 绘本图片搜索—删除-url
+     * 绘本图片 — 更新
      *
-     * @param string $url     -
-     *                        图片完整URL，URL长度不超过1024字节，URL对应的图片base64编码后大小不超过4M，最短边至少15px，最长边最大4096px,支持jpg/png/bmp格式，当image字段存在时url字段失效
-     * @param array  $options - 可选参数对象，key: value都为string类型
+     * @param string|null $image     图像数据或 URL，大小不超过 4M。最短边至少 50px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string|null $cont_sign 图片签名
+     * @param array       $brief     更新的摘要信息，最长256B
+     * @param string|null $tags      更新的分类信息，tag 间以逗号分隔，最多 2 个 tag。样例："100,11"
      *
-     * @description options列表:
      * @return array
      */
-    public function pictureBookDeleteByUrl(string $url, array $options = []): array {
-        $data['url'] = $url;
+    public function pictureBookUpdate(?string $image = null,
+                                      ?string $cont_sign = null, array $brief = [], ?string $tags = null): array {
+        try {
+            $data = $this->genDataWithTripleCondAndBriefTags($image, $cont_sign, $brief, $tags);
+        } catch (Exception $e) {
+            return [
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
+            ];
+        }
 
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_DELETE, $data);
-    }
-
-    /**
-     * 绘本图片搜索—删除-cont_sign
-     *
-     * @param string $contSign - 图片签名
-     * @param array  $options  - 可选参数对象，key: value都为string类型
-     *
-     * @description options列表:
-     * @return array
-     */
-    public function pictureBookDeleteBySign(string $contSign, array $options = []): array {
-        $data['cont_sign'] = $contSign;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_PICTURE_BOOK_DELETE, $data);
+        return $this->request(API_PICTURE_BOOK_UPDATE, $data);
     }
 }
-

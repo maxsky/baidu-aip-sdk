@@ -20,16 +20,16 @@ const API_SIMILAR_UPDATE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/
 const API_SIMILAR_DELETE = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/similar/delete';
 
 /** 相同图片 — 入库 */
-const API_SAME_HQ_ADD = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/add';
+const API_SAME_ADD = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/add';
 
 /** 相同图片 — 检索 */
-const API_SAME_HQ_SEARCH = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/search';
+const API_SAME_SEARCH = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/search';
 
 /** 相同图片 — 更新 */
-const API_SAME_HQ_UPDATE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/update';
+const API_SAME_UPDATE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/update';
 
 /** 相同图片 — 删除 */
-const API_SAME_HQ_DELETE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/delete';
+const API_SAME_DELETE = 'https://aip.baidubce.com/rest/2.0/realtime_search/same_hq/delete';
 
 /** 商品图片 - 入库 */
 const API_PRODUCT_ADD = 'https://aip.baidubce.com/rest/2.0/image-classify/v1/realtime_search/product/add';

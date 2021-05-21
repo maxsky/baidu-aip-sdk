@@ -23,82 +23,71 @@ use Baidu\Aip\Lib\AipBase;
 class AipKg extends AipBase {
 
     /**
-     * 创建任务接口
+     * 创建任务
      *
-     * @param string $name             - 任务名字
-     * @param string $templateContent  - json string 解析模板内容
-     * @param string $inputMappingFile - 抓取结果映射文件的路径
-     * @param string $outputFile       - 输出文件名字
-     * @param string $urlPattern       - url pattern
-     * @param array  $options          - 可选参数对象，key: value都为string类型
+     * @param string $name               任务名字
+     * @param string $template_content   json string 解析模板内容
+     * @param string $input_mapping_file 抓取结果映射文件的路径
+     * @param string $output_file        输出文件名字
+     * @param string $url_pattern        url pattern
+     * @param int    $limit_count        限制解析数量limit_count为0时进行全量任务，大于 0 时仅解析指定数量的页面
      *
-     * @description options列表:
-     *   limit_count 限制解析数量limit_count为0时进行全量任务，limit_count&gt;0时只解析limit_count数量的页面
      * @return array
      */
-    public function createTask(string $name, string $templateContent, string $inputMappingFile,
-                               string $outputFile, string $urlPattern, array $options = []): array {
-        $data['name'] = $name;
-        $data['template_content'] = $templateContent;
-        $data['input_mapping_file'] = $inputMappingFile;
-        $data['output_file'] = $outputFile;
-        $data['url_pattern'] = $urlPattern;
-
-        $data = array_merge($data, $options);
+    public function createTask(string $name, string $template_content, string $input_mapping_file,
+                               string $output_file, string $url_pattern, int $limit_count = 0): array {
+        $data = [
+            'name' => $name,
+            'template_content' => $template_content,
+            'input_mapping_file' => $input_mapping_file,
+            'output_file' => $output_file,
+            'url_pattern' => $url_pattern,
+            'limit_count' => $limit_count
+        ];
 
         return $this->request(API_TASK_CREATE, $data);
     }
 
     /**
-     * 更新任务接口
+     * 更新任务
      *
-     * @param integer $id      - 任务ID
-     * @param array   $options - 可选参数对象，key: value都为string类型
+     * @param int   $id      任务 ID
+     * @param array $options 可选参数列表:
+     *                       name 任务名字
+     *                       template_content json string 解析模板内容
+     *                       input_mapping_file 抓取结果映射文件的路径
+     *                       url_pattern url pattern
+     *                       output_file 输出文件名字
      *
-     * @description options列表:
-     *   name 任务名字
-     *   template_content json string 解析模板内容
-     *   input_mapping_file 抓取结果映射文件的路径
-     *   url_pattern url pattern
-     *   output_file 输出文件名字
      * @return array
      */
     public function updateTask(int $id, array $options = []): array {
-        $data['id'] = $id;
-
-        $data = array_merge($data, $options);
+        $data = array_merge(['id' => $id], $options);
 
         return $this->request(API_TASK_UPDATE, $data);
     }
 
     /**
-     * 获取任务详情接口
+     * 获取任务详情
      *
-     * @param integer $id      - 任务ID
-     * @param array   $options - 可选参数对象，key: value都为string类型
+     * @param int $id 任务 ID
      *
-     * @description options列表:
      * @return array
      */
-    public function getTaskInfo(int $id, array $options = []): array {
-        $data['id'] = $id;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_TASK_INFO, $data);
+    public function getTaskInfo(int $id): array {
+        return $this->request(API_TASK_INFO, ['id' => $id]);
     }
 
     /**
-     * 以分页的方式查询当前用户所有的任务信息接口
+     * 以分页的方式查询当前用户所有的任务信息
      *
-     * @param array $options - 可选参数对象，key: value都为string类型
+     * @param array $options 可选参数列表:
+     *                       id 任务ID，精确匹配
+     *                       name 中缀模糊匹配，abc 可以匹配 abc、aaabc、abcde 等
+     *                       status 要筛选的任务状态
+     *                       page 页码
+     *                       per_page 页码
      *
-     * @description options列表:
-     *   id 任务ID，精确匹配
-     *   name 中缀模糊匹配,abc可以匹配abc,aaabc,abcde等
-     *   status 要筛选的任务状态
-     *   page 页码
-     *   per_page 页码
      * @return array
      */
     public function getUserTasks(array $options = []): array {
@@ -106,36 +95,24 @@ class AipKg extends AipBase {
     }
 
     /**
-     * 启动任务接口
+     * 启动任务
      *
-     * @param integer $id      - 任务ID
-     * @param array   $options - 可选参数对象，key: value都为string类型
+     * @param int $id 任务ID
      *
-     * @description options列表:
      * @return array
      */
-    public function startTask(int $id, array $options = []): array {
-        $data['id'] = $id;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_TASK_START, $data);
+    public function startTask(int $id): array {
+        return $this->request(API_TASK_START, ['id' => $id]);
     }
 
     /**
-     * 查询任务状态接口
+     * 查询任务状态
      *
-     * @param integer $id      - 任务ID
-     * @param array   $options - 可选参数对象，key: value都为string类型
+     * @param int $id 任务ID
      *
-     * @description options列表:
      * @return array
      */
-    public function getTaskStatus(int $id, array $options = []): array {
-        $data['id'] = $id;
-
-        $data = array_merge($data, $options);
-
-        return $this->request(API_TASK_STATUS, $data);
+    public function getTaskStatus(int $id): array {
+        return $this->request(API_TASK_STATUS, ['id' => $id]);
     }
 }

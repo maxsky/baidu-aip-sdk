@@ -40,6 +40,9 @@ class AipBase {
     /** @var array 权限 */
     private $scope = 'brain_all_scope';
 
+    /** @var string|null */
+    private $charset = null;
+
     /** @var array 代理 */
     private $proxies = [];
 
@@ -63,10 +66,20 @@ class AipBase {
      * 查看版本
      *
      * @return string
-     *
      */
     public function getVersion(): string {
         return API_VERSION;
+    }
+
+    /**
+     * @param string $charset
+     *
+     * @return AipBase
+     */
+    public function setCharset(string $charset): AipBase {
+        $this->charset = $charset;
+
+        return $this;
     }
 
     /**
@@ -99,7 +112,7 @@ class AipBase {
             $params['access_token'] = $authObj['access_token'];
 
             // 特殊处理
-            $this->processRequest($params);
+            $this->processRequest($params, $data);
 
             $headers = $this->getAuthHeaders('POST', $url, $params);
 
@@ -117,7 +130,7 @@ class AipBase {
 
             $response = $this->httpClient->post($url, $options)->getBody();
 
-            $obj = processResult($response);
+            $obj = processResult($response, $this->charset);
         }
 
         if (!$obj || in_array($obj['error_code'], [100, 110, 111])) {
@@ -128,11 +141,11 @@ class AipBase {
 
                 $response = $this->httpClient->post($url, $options)->getBody();
 
-                $obj = processResult($response);
+                $obj = processResult($response, $this->charset);
             } else {
                 return [
                     'error_code' => 110,
-                    'error_description' => 'Access token invalid or no longer valid'
+                    'error_description' => 'access token invalid or no longer valid'
                 ];
             }
         }
@@ -144,12 +157,21 @@ class AipBase {
      * 处理请求参数
      *
      * @param array $params
+     * @param array $data
      *
      * @return void
      */
-    private function processRequest(array &$params): void {
+    private function processRequest(array &$params, array &$data): void {
         $params['aipSdk'] = 'php';
         $params['aipSdkVersion'] = $this->getVersion();
+
+        if ($this->charset === 'UTF-8') {
+            $params['charset'] = $this->charset;
+        }
+
+        if ($this->charset === 'GBK') {
+            $data = mb_convert_encoding($data, 'GBK', 'UTF8');
+        }
     }
 
     /**

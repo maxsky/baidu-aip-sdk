@@ -9,6 +9,7 @@
 
 namespace Baidu\Aip\Lib\Traits;
 
+use Baidu\Aip\AipNlp;
 use Exception;
 
 trait DataTrait {
@@ -113,5 +114,20 @@ trait DataTrait {
         }
 
         return $data;
+    }
+
+    /**
+     * @param bool $utf8
+     *
+     * @return AipNlp
+     */
+    protected function charset(bool $utf8): AipNlp {
+        if ($utf8) {
+            $req = $this->setCharset('UTF-8');
+        } else {
+            $req = $this->setCharset('GBK');
+        }
+
+        return $req;
     }
 }

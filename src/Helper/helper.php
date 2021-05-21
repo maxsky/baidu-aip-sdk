@@ -20,11 +20,22 @@ if (!function_exists('isUrl')) {
 
 if (!function_exists('processResult')) {
     /**
-     * @param string $content
+     * @param string      $content
+     * @param string|null $charset
      *
      * @return array|null
      */
-    function processResult(string $content): ?array {
-        return json_decode($content, true);
+    function processResult(string $content, ?string $charset = null): ?array {
+        if (!$charset) {
+            return json_decode($content, true);
+        }
+
+        if ($charset === 'GBK') {
+            return json_decode(
+                mb_convert_encoding($content, 'UTF8', 'GBK'), true, 512, JSON_BIGINT_AS_STRING
+            );
+        }
+
+        return json_decode($content, true, 512, JSON_BIGINT_AS_STRING);
     }
 }

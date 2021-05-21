@@ -16,6 +16,9 @@ class BaseTest extends TestCase {
     private $secretKey = '123';
 
     public function testExample() {
-        var_dump((string)(int)false);die;
+        var_dump(mb_convert_encoding([
+            'text' => 0
+        ], 'GBK', 'UTF8'));
+
     }
 }

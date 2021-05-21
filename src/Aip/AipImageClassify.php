@@ -144,7 +144,7 @@ class AipImageClassify extends AipBase {
             $data['image'] = base64_encode($image);
         }
 
-        $data['custom_lib'] = $custom_lib ? 'true' : 'false';
+        $data['custom_lib'] = bool2Str($custom_lib);
 
         return $this->request(API_LOGO_DETECT, $data);
     }

@@ -18,6 +18,17 @@ if (!function_exists('isUrl')) {
     }
 }
 
+if (!function_exists('bool2Str')) {
+    /**
+     * @param bool $logic
+     *
+     * @return string
+     */
+    function bool2Str(bool $logic): string {
+        return $logic ? 'true' : 'false';
+    }
+}
+
 if (!function_exists('processResult')) {
     /**
      * @param string      $content

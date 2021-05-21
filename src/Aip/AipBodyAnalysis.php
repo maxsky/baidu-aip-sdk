@@ -69,7 +69,7 @@ class AipBodyAnalysis extends AipBase {
             $data['area'] = implode(',', $area);
         }
 
-        $data['show'] = $show ? 'true' : 'false';
+        $data['show'] = bool2Str($show);
 
         return $this->request(API_BODY_NUM, $data);
     }

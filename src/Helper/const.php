@@ -8,7 +8,7 @@
  */
 
 /** 版本 */
-const API_VERSION= '2_2_20';
+const API_VERSION = '2_2_20';
 
 const ERROR_MSG = [
     216101 => 'not enough param'

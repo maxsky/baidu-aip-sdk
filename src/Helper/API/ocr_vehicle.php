@@ -26,7 +26,7 @@ const API_VEHICLE_INVOICE = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_in
 const API_USED_VEHICLE_INVOICE = 'https://aip.baidubce.com/rest/2.0/ocr/v1/used_vehicle_invoice';
 
 /** 车辆合格证识别 */
-const API_VEHICLE_CERTIFICATE = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_certificate';
+const API_VEHICLE_CERT = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_certificate';
 
 /** 机动车登记证书 */
 const API_VEHICLE_REG_CERT = 'https://aip.baidubce.com/rest/2.0/ocr/v1/vehicle_registration_certificate';

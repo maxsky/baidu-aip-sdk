@@ -115,9 +115,7 @@ class AipImageSearch extends AipBase {
      * @return array
      */
     public function sameAdd(string $image, array $brief, string $tags = null): array {
-        $data = $this->genDataWithBriefAndTags($image, $brief, $tags);
-
-        return $this->request(API_SAME_ADD, $data);
+        return $this->request(API_SAME_ADD, $this->genDataWithBriefAndTags($image, $brief, $tags));
     }
 
     /**
@@ -267,7 +265,7 @@ class AipImageSearch extends AipBase {
         }
 
         if ($brief) {
-            $data['brief'] = $brief;
+            $data['brief'] = json_encode($brief);
         }
 
         if ($class_id1) {
@@ -291,9 +289,7 @@ class AipImageSearch extends AipBase {
      * @return array
      */
     public function pictureBookAdd(string $image, array $brief, ?string $tags = null): array {
-        $data = $this->genDataWithBriefAndTags($image, $brief, $tags);
-
-        return $this->request(API_PICTURE_BOOK_ADD, $data);
+        return $this->request(API_PICTURE_BOOK_ADD, $this->genDataWithBriefAndTags($image, $brief, $tags));
     }
 
     /**

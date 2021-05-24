@@ -25,7 +25,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 人体关键点识别
      *
-     * @param string $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      *
      * @return array
      */
@@ -38,7 +38,7 @@ class AipBodyAnalysis extends AipBase {
      *
      * @url https://ai.baidu.com/ai-doc/BODY/Ak3cpyx6v#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
-     * @param string     $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string     $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      * @param array|null $type  可选属性，为空默认输出全部 22 个属性
      *
      * @return array
@@ -56,7 +56,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 人流量统计
      *
-     * @param string     $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string     $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      * @param array|null $area
      * @param bool       $show
      *
@@ -77,7 +77,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 手势识别
      *
-     * @param string $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      *
      * @return array
      */
@@ -88,8 +88,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 人像分割接口
      *
-     * @param string     $image 图像数据，base64 编码后进行 urlencode，要求 base64 编码和 urlencode 后大小不超过4M。 图片的 base64
-     *                          编码是不包含图片头的，如（data:image/jpg;base64,），支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string     $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      * @param array|null $type  指定返回结果图类型，为空默认返回 3 类结果图
      *
      * @return array
@@ -107,7 +106,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 驾驶行为分析
      *
-     * @param string     $image               图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string     $image               图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      * @param array|null $type                行为类别，为空默认识别所有属性
      * @param bool       $left_wheel_location 是否左舵车，默认为真
      *
@@ -120,7 +119,7 @@ class AipBodyAnalysis extends AipBase {
             $data['type'] = implode(',', $type);
         }
 
-        $data['wheel_location'] = (string)(int)$left_wheel_location;
+        $data['wheel_location'] = bool2Str($left_wheel_location);
 
         return $this->request(API_DRIVER_BEHAVIOR, $data);
     }
@@ -131,7 +130,7 @@ class AipBodyAnalysis extends AipBase {
      * @url https://ai.baidu.com/ai-doc/BODY/wk3cpyyog#%E8%AF%B7%E6%B1%82%E8%AF%B4%E6%98%8E
      *
      * @param bool   $dynamic true：动态人流量统计，返回总人数、跟踪ID、区域进出人数；false：静态人数统计，返回总人数
-     * @param string $image   图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string $image   图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      * @param array  $options 可选项，注意 dynamic 为 true 时必传 case_id 和 case_init
      *
      * @return array
@@ -146,11 +145,9 @@ class AipBodyAnalysis extends AipBase {
                     'error_msg' => ERROR_MSG[216101]
                 ];
             }
-
-            $data['dynamic'] = 'true';
-        } else {
-            $data['dynamic'] = 'false';
         }
+
+        $data['dynamic'] = bool2Str($dynamic);
 
         $data = array_merge($data, $options);
 
@@ -160,7 +157,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 手部关键点识别
      *
-     * @param string $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      *
      * @return array
      */
@@ -171,7 +168,7 @@ class AipBodyAnalysis extends AipBase {
     /**
      * 危险行为识别
      *
-     * @param string $data 视频数据，大小不超过4M，支持 mp4、mov 格式，5s 以内的监控视频片段
+     * @param string $data 视频数据，大小不超过 4M，支持 mp4、mov 格式，5s 以内的监控视频片段
      *
      * @return array
      */
@@ -180,7 +177,7 @@ class AipBodyAnalysis extends AipBase {
     }
 
     /**
-     * @param string $image 图像数据，大小不超过4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
+     * @param string $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      *
      * @return array
      */
@@ -189,7 +186,7 @@ class AipBodyAnalysis extends AipBase {
     }
 
     /**
-     * @param string $image
+     * @param string $image 图像数据，大小不超过 4M。支持图片格式：jpg、bmp、png，最短边至少 50px，最长边最大 4096px
      *
      * @return array
      */

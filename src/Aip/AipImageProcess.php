@@ -19,8 +19,11 @@
 namespace Baidu\Aip;
 
 use Baidu\Aip\Lib\AipBase;
+use Baidu\Aip\Lib\Traits\DataTrait;
 
 class AipImageProcess extends AipBase {
+
+    use DataTrait;
 
     /**
      * 黑白图像上色
@@ -30,13 +33,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function colourize(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_COLOURIZE, $data);
+        return $this->request(API_COLOURIZE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -50,11 +47,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function styleTrans(string $image, string $option): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['option'] = $option;
 
@@ -71,11 +64,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function selfieAnime(string $image, string $type = 'anime', int $mask_id = null): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['type'] = $type;
         $data['mask_id'] = $mask_id;
@@ -91,13 +80,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function skySeg(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_SKY_SEG, $data);
+        return $this->request(API_SKY_SEG, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -108,13 +91,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function dehaze(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_DEHAZE, $data);
+        return $this->request(API_DEHAZE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -125,13 +102,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function contrastEnhance(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_CONTRAST_ENHANCE, $data);
+        return $this->request(API_CONTRAST_ENHANCE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -142,13 +113,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function qualityEnhance(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_QUALITY_ENHANCE, $data);
+        return $this->request(API_QUALITY_ENHANCE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -159,13 +124,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function stretchRestore(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_STRETCH_RESTORE, $data);
+        return $this->request(API_STRETCH_RESTORE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -179,11 +138,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function inpaintingByMask(string $image, array $rectangle): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['rectangle'] = $rectangle;
 
@@ -198,13 +153,7 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function definitionEnhance(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_DEFINITION_ENHANCE, $data);
+        return $this->request(API_DEFINITION_ENHANCE, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -215,12 +164,6 @@ class AipImageProcess extends AipBase {
      * @return array
      */
     public function colorEnhance(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_COLOR_ENHANCE, $data);
+        return $this->request(API_COLOR_ENHANCE, $this->genDataWithDoubleImageType($image));
     }
 }

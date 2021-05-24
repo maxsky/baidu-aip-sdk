@@ -19,11 +19,14 @@
 namespace Baidu\Aip;
 
 use Baidu\Aip\Lib\AipBase;
+use Baidu\Aip\Lib\Traits\DataTrait;
 
 /**
  * UD = UserDefined
  */
 class AipContentCensor extends AipBase {
+
+    use DataTrait;
 
     /**
      * 图像审核
@@ -38,11 +41,7 @@ class AipContentCensor extends AipBase {
      * @return array
      */
     public function imageCensorUD(string $image, int $image_type = 0): array {
-        if (isUrl($image)) {
-            $data['imgUrl'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['imgType'] = $image_type;
 

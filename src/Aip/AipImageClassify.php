@@ -19,8 +19,12 @@
 namespace Baidu\Aip;
 
 use Baidu\Aip\Lib\AipBase;
+use Baidu\Aip\Lib\Traits\DataTrait;
+use Exception;
 
 class AipImageClassify extends AipBase {
+
+    use DataTrait;
 
     /**
      * 组合接口
@@ -35,11 +39,7 @@ class AipImageClassify extends AipBase {
      * @description options列表:
      */
     public function combination(string $image, array $scenes, array $options = []): array {
-        if (isUrl($image)) {
-            $data['imgUrl'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['scenes'] = $scenes;
 
@@ -59,11 +59,7 @@ class AipImageClassify extends AipBase {
      *   baike_num 返回百科信息的结果数，默认不返回
      */
     public function advancedGeneral(string $image, int $baike_num = 0): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['baike_num'] = $baike_num;
 
@@ -73,14 +69,14 @@ class AipImageClassify extends AipBase {
     /**
      * 图像单主体检测
      *
-     * @param string $image     图像数据，大小不超过4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
+     * @param string $image     图像数据，大小不超过 4M，最短边至少 15px，最长边最大 4096px，支持 jpg/png/bmp 格式
      * @param int    $with_face 如果检测主体是人，主体区域是否带上人脸部分，0-不带人脸区域，裁剪类需求推荐带人脸，检索/识别类需求推荐不带人脸。默认 1 带人脸。
      *
      * @return array
      */
     public function objectDetect(string $image, int $with_face = 1): array {
         $data = [
-            'image' => $image,
+            'image' => base64_encode($image),
             'with_face' => $with_face
         ];
 
@@ -97,11 +93,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function animalDetect(string $image, int $top_num = 6, int $baike_num = 0): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['top_num'] = $top_num;
         $data['baike_num'] = $baike_num;
@@ -118,11 +110,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function plantDetect(string $image, int $baike_num = 0): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['baike_num'] = $baike_num;
 
@@ -138,11 +126,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function logoDetect(string $image, bool $custom_lib = false): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['custom_lib'] = bool2Str($custom_lib);
 
@@ -158,11 +142,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function logoAdd(string $image, string $name): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['brief'] = json_encode(['name' => $name]);
 
@@ -178,17 +158,14 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function logoDelete(string $image = null, string $cont_sign = null): array {
-        if (!$image && !$cont_sign) {
+        try {
+            $data = $this->genDataWithTripleCond($image, $cont_sign);
+        } catch (Exception $e) {
             return [
-                'error_code' => 216101,
-                'error_msg' => ERROR_MSG[216101]
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
             ];
         }
-
-        $data = [
-            'image' => base64_encode($image),
-            'cont_sign' => $cont_sign
-        ];
 
         return $this->request(API_LOGO_DELETE, $data);
     }
@@ -202,11 +179,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function ingredient(string $image, int $top_num = 5): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data ['top_num'] = $top_num;
 
@@ -223,11 +196,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function customDishAdd(string $image, array $brief): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['brief'] = json_encode($brief);
 
@@ -242,13 +211,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function customDishSearch(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_DISH_SEARCH, $data);
+        return $this->request(API_DISH_SEARCH, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -260,20 +223,14 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function customDishDelete(string $image = null, string $cont_sign = null): array {
-        if (!$image && !$cont_sign) {
+        try {
+            $data = $this->genDataWithTripleCond($image, $cont_sign);
+        } catch (Exception $e) {
             return [
-                'error_code' => 216101,
-                'error_msg' => ERROR_MSG[216101]
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
             ];
         }
-
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        $data['cont_sign'] = $cont_sign;
 
         return $this->request(API_DISH_DELETE, $data);
     }
@@ -289,11 +246,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function dishDetect(string $image, float $filter_threshold = 0.95, int $top_num = 5, int $baike_num = 0): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
+        $data = $this->genDataWithDoubleImageType($image);
 
         $data['filter_threshold'] = $filter_threshold;
         $data['top_num'] = $top_num;
@@ -310,13 +263,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function redWine(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_RED_WINE_DETECT, $data);
+        return $this->request(API_RED_WINE_DETECT, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -327,13 +274,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function currency(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_CURRENCY_DETECT, $data);
+        return $this->request(API_CURRENCY_DETECT, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -344,13 +285,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function landmark(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_LANDMARK_DETECT, $data);
+        return $this->request(API_LANDMARK_DETECT, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -429,13 +364,7 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function facadeDetect(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_FACADE_DETECT, $data);
+        return $this->request(API_FACADE_DETECT, $this->genDataWithDoubleImageType($image));
     }
 
     /**
@@ -481,17 +410,14 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function facadeDelete(string $image = null, string $cont_sign = null): array {
-        if (!$image && !$cont_sign) {
+        try {
+            $data = $this->genDataWithTripleCond($image, $cont_sign);
+        } catch (Exception $e) {
             return [
-                'error_code' => 216101,
-                'error_msg' => ERROR_MSG[216101]
+                'error_code' => $e->getCode(),
+                'error_msg' => $e->getMessage()
             ];
         }
-
-        $data = [
-            'image' => base64_encode($image),
-            'cont_sign' => $cont_sign
-        ];
 
         return $this->request(API_FACADE_DELETE, $data);
     }
@@ -504,12 +430,6 @@ class AipImageClassify extends AipBase {
      * @return array
      */
     public function multiObjectDetect(string $image): array {
-        if (isUrl($image)) {
-            $data['url'] = $image;
-        } else {
-            $data['image'] = base64_encode($image);
-        }
-
-        return $this->request(API_MULTI_OBJECT_DETECT, $data);
+        return $this->request(API_MULTI_OBJECT_DETECT, $this->genDataWithDoubleImageType($image));
     }
 }

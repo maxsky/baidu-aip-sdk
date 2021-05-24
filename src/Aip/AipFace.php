@@ -34,12 +34,16 @@ class AipFace extends AipBase {
      * @return array
      */
     public function detect(string $image, string $image_type, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_DETECT, $data, true);
     }
@@ -54,6 +58,14 @@ class AipFace extends AipBase {
      * @return array
      */
     public function match(array $images): array {
+        foreach ($images as $image) {
+            $image['image_type'] = strtoupper($image['image_type']);
+
+            if ($image['image_type'] === 'BASE64') {
+                $image['image'] = base64_encode($image['image']);
+            }
+        }
+
         return $this->request(API_MATCH, $images, true);
     }
 
@@ -70,13 +82,17 @@ class AipFace extends AipBase {
      * @return array
      */
     public function search(string $image, string $image_type, array $group_id_list, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type,
             'group_id_list' => implode(',', $group_id_list)
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_SEARCH, $data, true);
     }
@@ -94,13 +110,17 @@ class AipFace extends AipBase {
      * @return array
      */
     public function multiSearch(string $image, string $image_type, array $group_id_list, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type,
             'group_id_list' => implode(',', $group_id_list)
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_MULTI_SEARCH, $data, true);
     }
@@ -120,14 +140,18 @@ class AipFace extends AipBase {
      */
     public function faceRegister(string $image,
                                  string $image_type, string $group_id, string $user_id, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type,
             'group_id' => $group_id,
             'user_id' => $user_id
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_USER_ADD, $data, true);
     }
@@ -147,14 +171,18 @@ class AipFace extends AipBase {
      */
     public function faceUpdate(string $image,
                                string $image_type, string $group_id, string $user_id, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type,
             'group_id' => $group_id,
             'user_id' => $user_id
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_USER_UPDATE, $data, true);
     }
@@ -314,6 +342,14 @@ class AipFace extends AipBase {
      * @return array
      */
     public function faceVerify(array $images): array {
+        foreach ($images as $image) {
+            $image['image_type'] = strtoupper($image['image_type']);
+
+            if ($image['image_type'] === 'BASE64') {
+                $image['image'] = base64_encode($image['image']);
+            }
+        }
+
         return $this->request(API_FACE_VERIFY, $images, true);
     }
 
@@ -332,14 +368,18 @@ class AipFace extends AipBase {
      */
     public function personVerify(string $image,
                                  string $image_type, string $id_card_number, string $name, array $options = []): array {
-        $data = [
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        $data = array_merge([
             'image' => $image,
             'image_type' => $image_type,
             'id_card_number' => $id_card_number,
             'name' => $name
-        ];
-
-        $data = array_merge($data, $options);
+        ], $options);
 
         return $this->request(API_PERSON_VERIFY, $data, true);
     }

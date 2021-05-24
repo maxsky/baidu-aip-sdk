@@ -12,16 +12,23 @@
 ├── AipImageSearch.php       // 图像搜索
 ├── AipKg.php                // 知识图谱（Knowledge Graph）
 ├── AipNlp.php               // 自然语言处理（Natural Language Processing）
-├── AipOcr.php               // 光学字符识别（Optical Character Recognition）
-├── AipSpeech.php            // 语音
-├── Helper                   // 助手函数
+├── AipOcrCard.php           // OCR 卡证
+├── AipOcrEdu.php            // OCR 教育
+├── AipOcrGeneric.php        // OCR 通用
+├── AipOcrOther.php          // OCR 其它
+├── AipOcrReceiptFinance.php // OCR 财务票据
+├── AipOcrReceiptMedical.php // OCR 医疗票据
+├── AipOcrVehicle.php        // OCR 汽车相关
+├── AipSpeech.php            // 语音 [暂时移除]
+├── Helper                   // 助手函数、常量
 └── Lib
     ├── AipBase.php          // Aip 基类
     ├── AipHttpUtil.php
     ├── AipSampleSigner.php
     ├── AipSignOption.php
-    └── Traits               // 拆分
+    └── Traits               // 工具
 ```
+
 
 **支持 PHP版本：7.2+**
 

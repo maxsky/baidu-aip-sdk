@@ -40,4 +40,4 @@ composer require maxsky/baidu-aip-sdk
 
 # 使用文档
 
-参考[官方网站](http://ai.baidu.com/docs#/Begin/top)
+参考 [AI 接入指南](https://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjgn3)

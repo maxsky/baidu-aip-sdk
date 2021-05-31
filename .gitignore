@@ -2,3 +2,4 @@
 /report
 /vendor
 composer.lock
+coverage.xml

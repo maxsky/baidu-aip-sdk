@@ -3,9 +3,7 @@
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
-         colors="true"
-         forceCoversAnnotation="true"
-         verbose="true">
+         colors="true">
     <testsuite name="default">
         <directory suffix="Test.php">tests</directory>
     </testsuite>

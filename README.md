@@ -41,3 +41,10 @@ composer require maxsky/baidu-aip-sdk
 # 使用文档
 
 参考 [AI 接入指南](https://ai.baidu.com/ai-doc/REFERENCE/Ck3dwjgn3)
+
+```php
+$aip = new Baidu\Aip\AipOcrGeneric('App ID','API Key','Secret Key');
+
+// 部分方法可传入 URL 地址
+$aip->general(file_get_contents('File path'));
+```

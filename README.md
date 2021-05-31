@@ -1,6 +1,7 @@
 # Baidu AIP PHP SDK
 
 [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
+[![codecov](https://codecov.io/gh/maxsky/baidu-aip-sdk/branch/main/graph/badge.svg?token=oazUSp4Qo3)](https://codecov.io/gh/maxsky/baidu-aip-sdk)
 
 ## 目录结构
 

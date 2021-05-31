@@ -24,7 +24,7 @@ use GuzzleHttp\Client;
 /**
  * Aip Base 基类
  */
-class AipBase {
+abstract class AipBase {
 
     use AuthTrait;
 

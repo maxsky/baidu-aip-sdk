@@ -16,6 +16,25 @@ trait DataTrait {
 
     /**
      * @param string $image
+     * @param string $image_type
+     *
+     * @return array
+     */
+    protected function genDataWithImageType(string $image, string $image_type): array {
+        $image_type = strtoupper($image_type);
+
+        if ($image_type === 'BASE64') {
+            $image = base64_encode($image);
+        }
+
+        return [
+            'image' => $image,
+            'image_type' => $image_type
+        ];
+    }
+
+    /**
+     * @param string $image
      *
      * @return array
      */

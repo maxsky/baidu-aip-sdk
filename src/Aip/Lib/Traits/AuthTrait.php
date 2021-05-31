@@ -9,7 +9,7 @@
 
 namespace Baidu\Aip\Lib\Traits;
 
-use Baidu\Aip\Lib\AipSampleSigner;
+use Baidu\Aip\Lib\Utils\AipSampleSigner;
 
 trait AuthTrait {
 

@@ -16,7 +16,7 @@
 * the License.
 */
 
-namespace Baidu\Aip\Lib;
+namespace Baidu\Aip\Lib\Utils;
 
 class AipSignOption {
 

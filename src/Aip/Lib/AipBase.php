@@ -104,7 +104,7 @@ abstract class AipBase {
      *
      * @return array
      */
-    protected function request(string $url, array $data, bool $is_json = false): array {
+    public function request(string $url, array $data, bool $is_json = false): array {
         $obj = null;
         $authObj = $this->auth();
 
@@ -133,7 +133,7 @@ abstract class AipBase {
             $obj = processResult($response, $this->charset);
         }
 
-        if (!$obj || in_array($obj['error_code'], [100, 110, 111])) {
+        if (!$obj || (isset($obj['error_code']) && in_array($obj['error_code'], [100, 110, 111]))) {
             $authObj = $this->auth(true);
 
             if ($authObj) {

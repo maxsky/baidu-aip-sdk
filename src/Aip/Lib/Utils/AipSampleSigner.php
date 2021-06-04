@@ -51,7 +51,7 @@ class AipSampleSigner {
                                 string $path, array $headers, array $params, array $options = []): string {
         // 设定签名有效时间
         if (!isset($options[AipSignOption::EXPIRATION_IN_SECONDS])) {
-            // 默认值1800秒
+            // 默认值 1800 秒
             $expirationInSeconds = AipSignOption::DEFAULT_EXPIRATION_IN_SECONDS;
         } else {
             $expirationInSeconds = $options[AipSignOption::EXPIRATION_IN_SECONDS];

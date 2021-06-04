@@ -13,3 +13,10 @@ const API_VERSION = '2_2_20';
 const ERROR_MSG = [
     216101 => 'not enough param'
 ];
+
+$files = glob(__DIR__ . DIRECTORY_SEPARATOR . 'API/*.php');
+
+foreach ($files as $file) {
+    /** @noinspection PhpIncludeInspection */
+    require_once $file;
+}

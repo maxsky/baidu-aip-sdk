@@ -22,41 +22,6 @@ use InvalidArgumentException;
 
 class AipHttpUtil {
 
-    // 根据RFC 3986，除了：
-    //   1.大小写英文字符
-    //   2.阿拉伯数字
-    //   3.点'.'、波浪线'~'、减号'-'以及下划线'_'
-    // 以外都要编码
-    public static $PERCENT_ENCODED_STRINGS = [];
-
-    // 填充编码数组
-    public static function __init() {
-        for ($i = 0; $i < 256; ++$i) {
-            self::$PERCENT_ENCODED_STRINGS[$i] = sprintf('%%%02X', $i);
-        }
-
-        // a-z 不编码
-        foreach (range('a', 'z') as $ch) {
-            self::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
-        }
-
-        // A-Z 不编码
-        foreach (range('A', 'Z') as $ch) {
-            self::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
-        }
-
-        // 0-9 不编码
-        foreach (range('0', '9') as $ch) {
-            self::$PERCENT_ENCODED_STRINGS[ord($ch)] = $ch;
-        }
-
-        // 以下 4 个字符不编码
-        self::$PERCENT_ENCODED_STRINGS[ord('-')] = '-';
-        self::$PERCENT_ENCODED_STRINGS[ord('.')] = '.';
-        self::$PERCENT_ENCODED_STRINGS[ord('_')] = '_';
-        self::$PERCENT_ENCODED_STRINGS[ord('~')] = '~';
-    }
-
     /**
      * 在uri编码中不能对'/'编码
      *
@@ -78,8 +43,10 @@ class AipHttpUtil {
     public static function urlEncode(string $value): string {
         $result = '';
 
+        $percentEncodedStrings = getPercentEncodedStrings();
+
         for ($i = 0; $i < strlen($value); ++$i) {
-            $result .= self::$PERCENT_ENCODED_STRINGS[ord($value[$i])];
+            $result .= $percentEncodedStrings[ord($value[$i])];
         }
 
         return $result;

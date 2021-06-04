@@ -29,6 +29,19 @@
         },
         "classmap": [
             "src/Helper/"
+        ],
+        "files": [
+            "src/Helper/const.php",
+            "src/Helper/helper.php"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ],
+        "files": [
+            "src/Helper/const.php",
+            "src/Helper/helper.php"
         ]
     },
     "config": {

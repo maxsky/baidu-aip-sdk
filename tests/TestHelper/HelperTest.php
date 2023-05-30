@@ -7,6 +7,10 @@
  * Time: 17:18
  */
 
+namespace BaiduAipTests\TestHelper;
+
+use BaiduAipTests\TestCase;
+
 class HelperTest extends TestCase {
 
     public function testIsUrl() {

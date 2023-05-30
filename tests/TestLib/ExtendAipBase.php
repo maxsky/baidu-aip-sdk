@@ -7,6 +7,8 @@
  * Time: 17:02
  */
 
+namespace BaiduAipTests\TestLib;
+
 use Baidu\Aip\Lib\AipBase;
 
 class ExtendAipBase extends AipBase {

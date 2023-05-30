@@ -17,6 +17,5 @@ const ERROR_MSG = [
 $files = glob(__DIR__ . DIRECTORY_SEPARATOR . 'API/*.php');
 
 foreach ($files as $file) {
-    /** @noinspection PhpIncludeInspection */
     require_once $file;
 }
